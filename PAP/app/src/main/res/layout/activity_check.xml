@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_check"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="fr.jlm2017.pap.Check">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="2">
+
+            <TextView
+                android:text="Numéro de rue"
+                android:layout_height="match_parent"
+                android:id="@+id/streeNumFix"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:background="#DDDDDD"
+                android:layout_width="wrap_content"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberSigned"
+                android:ems="10"
+                android:id="@+id/StreetNum"
+                android:hint="Entrez ici"
+                android:layout_alignBottom="@+id/streeNumFix"
+                android:layout_alignParentEnd="true"
+                android:layout_weight="22"
+                android:imeOptions="actionDone"/>
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginRight="20dp">
+
+                <CheckBox
+                    android:text="Bis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ButtonBis"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:text="Ter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/ButtonTer"
+                    android:layout_weight="1" />
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center">
+
+            <TextView
+                android:text="Adresse"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/AdressFix"
+                android:layout_above="@+id/CheckOpenDoor"
+                android:layout_alignParentStart="true"
+                android:gravity="center"
+                android:background="#DDDDDD"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/Adress"
+                android:hint="Essayez le GPS"
+                android:layout_weight="1"
+                android:imeOptions="actionDone"/>
+
+            <Button
+                android:text="GPS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/GPSButton" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center">
+
+            <CheckBox
+                android:text="Appartement ?"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/CheckAppart"
+                android:layout_weight="1"
+                android:checked="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:alpha="1"
+            android:animationCache="false"
+            android:id="@+id/appartLayout">
+
+            <TextView
+                android:text="Numéro d'appartement"
+                android:layout_height="match_parent"
+                android:id="@+id/numDoorFix"
+                android:layout_above="@+id/Adress"
+                android:layout_centerHorizontal="false"
+                android:gravity="center"
+                android:background="#DDDDDD"
+                android:layout_width="wrap_content"
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:ems="10"
+                android:id="@+id/DoorNum"
+                android:hint="Porte"
+                android:layout_below="@+id/numDoorFix"
+                android:layout_centerHorizontal="false" />
+
+        </LinearLayout>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.8"
+            android:gravity="center_vertical">
+
+            <CheckBox
+                android:text="Porte Ouverte ?"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/CheckOpenDoor"
+                android:layout_above="@+id/AddDoor"
+                android:layout_alignParentStart="true" />
+
+            <CheckBox
+                android:text="Utile de revenir ?"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/CheckComeBack"
+                android:layout_above="@+id/AddDoor"
+                android:layout_toEndOf="@+id/streeNumFix"
+                android:layout_marginLeft="50dp" />
+
+        </RadioGroup>
+
+        <Button
+            android:text="Envoyer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/AddDoor"
+            android:layout_weight="1.5"
+            android:layout_marginTop="30dp" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>
