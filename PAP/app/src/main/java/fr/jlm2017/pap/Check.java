@@ -29,9 +29,9 @@ public class Check extends AppCompatActivity {
 
     // other variables
     private int streetNum, appartNum;
-    private String streetName, bisTer;
+    private String streetName, bisTer, cityName;
     private double latitude, longitude;
-    private boolean isAppart, isOpen, comeBack, numFilled, streetFilled, positionOK;
+    private boolean isAppart, isOpen, comeBack, numFilled, positionOK;
 
     // DB variables
     private DatabaseReference mDoorbase;
@@ -39,7 +39,7 @@ public class Check extends AppCompatActivity {
 
     //views variables
     private Button mAddDoor, mGPS;
-    private EditText mAdress, mNumS, mNumA;
+    private EditText mAdress, mNumS, mNumA, mCity;
     private CheckBox bisButton, terButton;
     private CheckBox checkDoorOpen, checkComeBack, checkAppart;
     private TextView appartFix;
@@ -60,7 +60,6 @@ public class Check extends AppCompatActivity {
 
     public void initValues () {
         numFilled = false;
-        streetFilled = false;
         isOpen = false;
         comeBack = false;
         positionOK = false;
@@ -87,7 +86,6 @@ public class Check extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         setContentView(R.layout.activity_check);
 
         //widgets
@@ -96,6 +94,7 @@ public class Check extends AppCompatActivity {
         mAdress = (EditText) findViewById(R.id.Adress);
         mNumA = (EditText) findViewById(R.id.DoorNum);
         mNumS = (EditText) findViewById(R.id.StreetNum);
+        mCity = (EditText) findViewById(R.id.Ville);
         bisButton = (CheckBox) findViewById(R.id.ButtonBis);
         terButton = (CheckBox) findViewById(R.id.ButtonTer);
         checkDoorOpen = (CheckBox) findViewById(R.id.CheckOpenDoor);
@@ -116,98 +115,17 @@ public class Check extends AppCompatActivity {
         mDoorbase = FirebaseDatabase.getInstance().getReference();
         doors = mDoorbase.child("Doors");
 
-
         //GPS
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                latitude = location.getLatitude();
-                longitude = location.getLongitude();
-                positionOK = true;
-                String message = "Position récupérée : "+ latitude + " ; " + longitude;
-                showToast(message);
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
-        };
-
-
+        GPSInit();
         configureGPSBUtton();
 
-
         //events
+        addAttemptListener();
+        UIListeners();
 
+    }
 
-        mAddDoor.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-
-                String num = mNumS.getText().toString().trim();
-                if (!num.equals("")) {
-                    streetNum = Integer.parseInt(num);
-                    numFilled = true;
-                } else {
-                    numFilled = false;
-                }
-
-                if (isAppart) {
-                    num = mNumA.getText().toString().trim();
-                    if (!num.equals("")) {
-                        appartNum = Integer.parseInt(num);
-                    }
-                }
-
-                streetName = mAdress.getText().toString();
-                streetFilled = (!streetName.equals(""));
-
-                if (numFilled) {
-                    if (streetFilled) {
-                        if (!isAppart || appartNum != 0) {
-                            String street = streetNum + bisTer + ", " + streetName;
-                            if (isAppart) street = "Apt n° " + appartNum + ", " + street;
-                            DatabaseReference door = doors.push();
-                            door.child("Latitude").setValue(latitude);
-                            door.child("Longitude").setValue(longitude);
-                            door.child("Adresse").setValue(street);
-                            door.child("Open").setValue(isOpen);
-                            door.child("Worth").setValue(comeBack);
-                            String message = "Vous avez bien toqué au : " + street;
-
-                            showLongToast(message);
-                            resetUI();
-                            initValues();
-
-                        } else {
-                            String message = "Veuillez rentrer un numéro d'appartement ou décocher \"Appartement\"";
-                            showToast(message);
-                        }
-                    } else {
-                        String message = "Veuillez rentrer une adresse";
-                        showToast(message);
-                    }
-                } else {
-                    String message = "Veuillez rentrer le numéro correspondant à l'adresse";
-                    showToast(message);
-                }
-            }
-        });
-
-
+    private void UIListeners() {
         checkAppart.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -269,8 +187,97 @@ public class Check extends AppCompatActivity {
                 }
             }
         });
+    }
 
+    private void addAttemptListener() {
+        mAddDoor.setOnClickListener(new View.OnClickListener() {
 
+            public void onClick(View v) {
+
+                String num = mNumS.getText().toString().trim();
+                if (!num.equals("")) {
+                    streetNum = Integer.parseInt(num);
+                    numFilled = true;
+                } else {
+                    numFilled = false;
+                }
+
+                if (isAppart) {
+                    num = mNumA.getText().toString().trim();
+                    if (!num.equals("")) {
+                        appartNum = Integer.parseInt(num);
+                    }
+                }
+
+                streetName = mAdress.getText().toString();
+                cityName = mCity.getText().toString();
+
+                if (numFilled) {
+                    if (!streetName.equals("")) {
+                        if(!cityName.equals("")) {
+                            if (!isAppart || appartNum != 0) {
+                                String street = streetNum + bisTer + ", " + streetName;
+                                if (isAppart) street = "Apt n° " + appartNum + ", " + street;
+
+                                //création de la porte et envoi dans la base
+                                Porte porte = new Porte(street, cityName, isOpen, comeBack, latitude, longitude);
+                                /** TODO push **/
+                                DatabaseReference door = doors.push(porte);
+
+                                String message = "Vous avez bien toqué au : " + street;
+                                showLongToast(message);
+                                resetUI();
+                                initValues();
+
+                            } else {
+                                String message = "Veuillez rentrer un numéro d'appartement ou décocher \"Appartement\"";
+                                showToast(message);
+                            }
+                        }
+                        else {
+                            String message = "Veuillez rentrer une ville";
+                            showToast(message);
+                        }
+                    } else {
+                        String message = "Veuillez rentrer une adresse";
+                        showToast(message);
+                    }
+                } else {
+                    String message = "Veuillez rentrer le numéro correspondant à l'adresse";
+                    showToast(message);
+                }
+            }
+        });
+    }
+
+    private void GPSInit() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                latitude = location.getLatitude();
+                longitude = location.getLongitude();
+                positionOK = true;
+                String message = "Position récupérée : "+ latitude + " ; " + longitude;
+                showToast(message);
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(intent);
+            }
+        };
     }
 
     private void configureGPSBUtton() {
