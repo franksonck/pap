@@ -61,7 +61,6 @@ public class Check extends AppCompatActivity {
     public void initValues () {
         numFilled = false;
         streetFilled = false;
-        isAppart = false;
         isOpen = false;
         comeBack = false;
         positionOK = false;
@@ -110,6 +109,7 @@ public class Check extends AppCompatActivity {
         appartFix.setAlpha(0);
         checkComeBack.setEnabled(false);
         checkComeBack.setAlpha(0);
+        isAppart = false;
         initValues();
 
         //Database
@@ -187,9 +187,11 @@ public class Check extends AppCompatActivity {
                             door.child("Open").setValue(isOpen);
                             door.child("Worth").setValue(comeBack);
                             String message = "Vous avez bien toqué au : " + street;
+
                             showLongToast(message);
-                            initValues();
                             resetUI();
+                            initValues();
+
                         } else {
                             String message = "Veuillez rentrer un numéro d'appartement ou décocher \"Appartement\"";
                             showToast(message);
