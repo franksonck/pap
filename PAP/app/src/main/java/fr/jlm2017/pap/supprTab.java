@@ -16,7 +16,6 @@ public class supprTab extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_admin_2, container, false);
-        TextView textView = (TextView) rootView.findViewById(R.id.addMilitant);
 
         return rootView;
     }

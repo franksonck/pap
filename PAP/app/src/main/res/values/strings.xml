@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Porte-A-Porte by FI</string>
     <string name="title_activity_login">Connexion au service</string>
+    <string name="basePWD">yeswecanchon</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -14,9 +15,11 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="title_activity_admin">AdminActivity</string>
+    <string name="title_activity_admin">Gestion des militants</string>
     <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="admin">Admin ?</string>
+    <string name="ajouter_le_militant">Ajouter le militant</string>
+    <string name="email">e-mail</string>
 
     <!-- Strings in the Check Activity -->
 

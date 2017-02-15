@@ -10,6 +10,7 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -38,9 +39,9 @@ public class Check extends AppCompatActivity {
     //views variables
     private Button mAddDoor, mGPS;
     private EditText mAdress, mNumS, mNumA, mCity;
+    private TextInputLayout appartLayout;
     private CheckBox bisButton, terButton;
     private CheckBox checkDoorOpen, checkComeBack, checkAppart;
-    private TextView appartFix;
 
     //GPS variables
 
@@ -52,7 +53,7 @@ public class Check extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    public void showLongToast(String message) {
+    public static void showLongToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
@@ -91,6 +92,7 @@ public class Check extends AppCompatActivity {
         mGPS = (Button) findViewById(R.id.GPSButton);
         mAdress = (EditText) findViewById(R.id.Adress);
         mNumA = (EditText) findViewById(R.id.DoorNum);
+        appartLayout = (TextInputLayout) findViewById(R.id.DoorNumLayout) ;
         mNumS = (EditText) findViewById(R.id.StreetNum);
         mCity = (EditText) findViewById(R.id.Ville);
         bisButton = (CheckBox) findViewById(R.id.ButtonBis);
@@ -98,12 +100,10 @@ public class Check extends AppCompatActivity {
         checkDoorOpen = (CheckBox) findViewById(R.id.CheckOpenDoor);
         checkComeBack = (CheckBox) findViewById(R.id.CheckComeBack);
         checkAppart = (CheckBox) findViewById(R.id.CheckAppart);
-        appartFix = (TextView) findViewById(R.id.numDoorFix);
 
         //values
-        mNumA.setAlpha(0);
+        appartLayout.setAlpha(0);
         mNumA.setEnabled(false);
-        appartFix.setAlpha(0);
         checkComeBack.setEnabled(false);
         checkComeBack.setAlpha(0);
         isAppart = false;
@@ -126,11 +126,9 @@ public class Check extends AppCompatActivity {
                 isAppart = b;
                 mNumA.setEnabled(b);
                 if (b) {
-                    mNumA.setAlpha(1);
-                    appartFix.setAlpha(1);
+                    appartLayout.setAlpha(1);
                 } else {
-                    mNumA.setAlpha(0);
-                    appartFix.setAlpha(0);
+                    appartLayout.setAlpha(0);
                 }
             }
         });

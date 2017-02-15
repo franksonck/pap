@@ -25,29 +25,24 @@
             android:gravity="center"
             android:layout_weight="2">
 
-            <TextView
-                android:text="Numéro de rue"
-                android:layout_height="match_parent"
-                android:id="@+id/streeNumFix"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"
-                android:background="#DDDDDD"
-                android:layout_width="wrap_content"
-                android:paddingRight="10dp"
-                android:paddingLeft="10dp" />
-
-            <EditText
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberSigned"
-                android:ems="10"
-                android:id="@+id/StreetNum"
-                android:hint="Entrez ici"
-                android:layout_alignBottom="@+id/streeNumFix"
-                android:layout_alignParentEnd="true"
-                android:layout_weight="22"
-                android:imeOptions="actionDone"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:ems="10"
+                    android:id="@+id/StreetNum"
+                    android:hint="Numéro dans la rue"
+                    android:layout_alignBottom="@+id/streeNumFix"
+                    android:layout_alignParentEnd="true"
+                    android:layout_weight="22"
+                    android:imeOptions="actionDone"/>
+
+            </android.support.design.widget.TextInputLayout>
 
             <RadioGroup
                 android:layout_width="wrap_content"
@@ -91,27 +86,20 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2">
 
-                    <TextView
-                        android:text="Rue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:id="@+id/AdressFix"
-                        android:layout_above="@+id/CheckOpenDoor"
-                        android:layout_alignParentStart="true"
-                        android:gravity="center"
-                        android:background="#DDDDDD"
-                        android:paddingRight="10dp"
-                        android:paddingLeft="10dp"
-                        />
-
-                    <EditText
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:ems="10"
-                        android:id="@+id/Adress"
-                        android:hint="Entrez ici"
-                        android:imeOptions="actionDone"/>
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:ems="10"
+                            android:id="@+id/Adress"
+                            android:hint="Nom de rue"
+                            android:imeOptions="actionDone"/>
+                    </android.support.design.widget.TextInputLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -121,27 +109,20 @@
                     android:layout_weight="2"
                     android:gravity="center">
 
-                    <TextView
-                        android:text="Ville"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:id="@+id/VilleFix"
-                        android:layout_above="@+id/CheckOpenDoor"
-                        android:layout_alignParentStart="true"
-                        android:gravity="center"
-                        android:background="#DDDDDD"
-                        android:paddingRight="10dp"
-                        android:paddingLeft="10dp" />
-
-                    <EditText
+                    <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:ems="10"
-                        android:id="@+id/Ville"
-                        android:hint="Entrez ici"
-                        android:layout_weight="1"
-                        android:imeOptions="actionDone"/>
+                        android:layout_height="match_parent"
+                        android:layout_weight="1">
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:ems="10"
+                            android:id="@+id/Ville"
+                            android:hint="Ville"
+                            android:layout_weight="1"
+                            android:imeOptions="actionDone"/>
+                    </android.support.design.widget.TextInputLayout>
 
                 </LinearLayout>
             </LinearLayout>
@@ -162,45 +143,31 @@
 
             <CheckBox
                 android:text="Appartement ?"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/CheckAppart"
-                android:layout_weight="1"
+                android:layout_weight="1.5"
                 android:checked="false" />
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:gravity="center"
-            android:alpha="1"
-            android:animationCache="false"
-            android:id="@+id/appartLayout">
-
-            <TextView
-                android:text="Numéro d'appartement"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/DoorNumLayout"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/numDoorFix"
-                android:layout_above="@+id/Adress"
-                android:layout_centerHorizontal="false"
-                android:gravity="center"
-                android:background="#DDDDDD"
-                android:layout_width="wrap_content"
-                android:paddingRight="10dp"
-                android:paddingLeft="10dp" />
+                android:layout_weight="1">
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:inputType="number"
-                android:ems="10"
-                android:id="@+id/DoorNum"
-                android:hint="Porte"
-                android:layout_below="@+id/numDoorFix"
-                android:layout_centerHorizontal="false" />
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:id="@+id/DoorNum"
+                    android:hint="Numéro d'appartement"
+                    android:layout_below="@+id/numDoorFix"
+                    android:layout_centerHorizontal="false" />
+            </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
+
 
         <RadioGroup
             android:layout_width="match_parent"

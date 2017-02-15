@@ -87,8 +87,8 @@ public class QueryBuilder {
         return String
                 .format("{\"militant\"  : {\"pseudo\": \"%s\", "
                                 + " \"email\": \"%s\", "
-                                + "\"password\": \"%s\"}, \"safe\" : true}",
-                        contact.pseudo, contact.email, contact.password);
+                                + "\"password\": \"%s\",\"admin\": \"%b\" }, \"safe\" : true}",
+                        contact.pseudo, contact.email, contact.password, contact.isAdmin);
     }
 
     public String createPorte(Porte contact)

@@ -17,11 +17,22 @@ public class Militant extends DBObject {
         pseudo = email.substring(0,email.indexOf('@'));
         this.email = email;
         this.password = password;
+        isAdmin =false;
     }
 
-    public Militant(String pseudo, String email, String password) {
+    public Militant(String pseudo, String email, String password, boolean isAdmin) {
         this.pseudo = pseudo;
         this.email = email;
         this.password = password;
+        this.isAdmin = isAdmin;
+    }
+
+    @Override
+    public String toString() {
+        return "Militant{" +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", isAdmin=" + isAdmin +
+                '}';
     }
 }
