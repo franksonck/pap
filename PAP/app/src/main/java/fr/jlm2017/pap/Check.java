@@ -7,13 +7,15 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.media.audiofx.BassBoost;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,8 +24,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
+
 
 public class Check extends AppCompatActivity {
 
@@ -32,10 +34,6 @@ public class Check extends AppCompatActivity {
     private String streetName, bisTer, cityName;
     private double latitude, longitude;
     private boolean isAppart, isOpen, comeBack, numFilled, positionOK;
-
-    // DB variables
-    private DatabaseReference mDoorbase;
-    private DatabaseReference doors;
 
     //views variables
     private Button mAddDoor, mGPS;
@@ -110,10 +108,6 @@ public class Check extends AppCompatActivity {
         checkComeBack.setAlpha(0);
         isAppart = false;
         initValues();
-
-        //Database
-        mDoorbase = FirebaseDatabase.getInstance().getReference();
-        doors = mDoorbase.child("Doors");
 
         //GPS
         GPSInit();
@@ -221,8 +215,9 @@ public class Check extends AppCompatActivity {
 
                                 //création de la porte et envoi dans la base
                                 Porte porte = new Porte(street, cityName, isOpen, comeBack, latitude, longitude);
-                                /** TODO push **/
-                                DatabaseReference door = doors.push(porte);
+
+                                SaveAsyncTask saveDoor = new SaveAsyncTask();
+                                saveDoor.execute(porte);
 
                                 String message = "Vous avez bien toqué au : " + street;
                                 showLongToast(message);
@@ -250,6 +245,36 @@ public class Check extends AppCompatActivity {
         });
     }
 
+    //MENU
+
+    private Menu m = null;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_admin, menu);
+        m = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item)
+    {
+        switch(item.getItemId())
+        {
+            case R.id.logout:
+                Intent logout = new Intent(Check.this, LoginActivity.class);
+                Check.this.startActivity(logout);
+                return true;
+            case R.id.adminLog:
+                Intent goAdmin = new Intent(Check.this, AdminActivity.class);
+                Check.this.startActivity(goAdmin);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void GPSInit() {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -260,6 +285,10 @@ public class Check extends AppCompatActivity {
                 positionOK = true;
                 String message = "Position récupérée : "+ latitude + " ; " + longitude;
                 showToast(message);
+
+                // on résactive l'envoi
+                mAddDoor.setText("ENVOYER");
+                mAddDoor.setEnabled(true);
             }
 
             @Override
@@ -291,6 +320,10 @@ public class Check extends AppCompatActivity {
                     }
                     return;
                 }
+                // on désactive l'envoi tant que le GPS n'est pas ok
+                mAddDoor.setText("En attente du GPS");
+                mAddDoor.setEnabled(false);
+
                 locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null); // on essaie avec la précision max
                 if(!positionOK) locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
             }

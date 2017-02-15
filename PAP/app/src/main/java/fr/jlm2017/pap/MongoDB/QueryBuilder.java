@@ -22,7 +22,7 @@ public class QueryBuilder {
      * @return
      */
     public String getApiKey() {
-        return "V7bh9JO4qPAMtmJ-hn2MiWW1DY-oHZh6";
+        return "UWo1YV1Xuga85HQdNKS_W252YIvDJB3h";
     }
 
     /**
@@ -32,7 +32,7 @@ public class QueryBuilder {
      */
     public String getBaseUrl()
     {
-        return "https://api.mongolab.com/api/1/databases/"+getDatabaseName()+"/collections/";
+        return "https://api.mlab.com/api/1/databases/"+getDatabaseName()+"/collections/";
     }
 
     /**
@@ -48,6 +48,19 @@ public class QueryBuilder {
      * Builds a complete URL using the methods specified above
      * @return
      */
+    public String buildObjectsSaveURL(DBObject objects) //objects = "militants" ou "portes"
+    {
+        String solution;
+        if(objects.getClass()==Militant.class)
+        {
+            solution = "militants";
+        }
+        else {
+            solution = "portes";
+        }
+        return buildObjectsSaveURL(solution);
+    }
+
     public String buildObjectsSaveURL(String objects) //objects = "militants" ou "portes"
     {
         return getBaseUrl()+objects+docApiKeyUrl();
@@ -72,7 +85,7 @@ public class QueryBuilder {
     public String createMilitant(Militant contact)
     {
         return String
-                .format("{\"document\"  : {\"pseudo\": \"%s\", "
+                .format("{\"militant\"  : {\"pseudo\": \"%s\", "
                                 + " \"email\": \"%s\", "
                                 + "\"password\": \"%s\"}, \"safe\" : true}",
                         contact.pseudo, contact.email, contact.password);
@@ -81,7 +94,7 @@ public class QueryBuilder {
     public String createPorte(Porte contact)
     {
         return String
-                .format("{\"document\"  : {\"adresse\": \"%s\", "
+                .format("{\"porte\"  : {\"adresse\": \"%s\", "
                                 + "\"ville\": \"%s\", \"ouverte\": \"%b\", "
                                 + "\"revenir\": \"%b\", \"latitude\": \"%f\","
                                 + "\"longitude\": \"%f\"}, \"safe\" : true}",

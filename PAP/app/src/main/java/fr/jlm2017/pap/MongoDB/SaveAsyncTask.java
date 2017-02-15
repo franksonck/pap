@@ -3,46 +3,57 @@ package fr.jlm2017.pap.MongoDB;
 /**
  * Created by thoma on 14/02/2017.
  */
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.io.IOException;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import android.os.AsyncTask;
 
 
 
 public class SaveAsyncTask extends AsyncTask<DBObject, Void, Boolean> {
 
+    public static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
+
+    public OkHttpClient client;
+
     @Override
     protected Boolean doInBackground(DBObject... arg0) {
-        try
-        {
-            DBObject contact = arg0[0];
 
-            QueryBuilder qb = new QueryBuilder();
+        DBObject contact = arg0[0];
 
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpPost request = new HttpPost(qb.buildObjectsSaveURL());
+        QueryBuilder qb = new QueryBuilder();
 
-            StringEntity params =new StringEntity(qb.createObject(contact));
-            request.addHeader("content-type", "application/json");
-            request.setEntity(params);
-            HttpResponse response = httpClient.execute(request);
+        client = new OkHttpClient();
 
-            if(response.getStatusLine().getStatusCode()<205)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        } catch (Exception e) {
-            //e.getCause();
-            String val = e.getMessage();
-            String val2 = val;
-            return false;
+        String json = qb.createObject(contact);
+        String response = "";
+        try {
+            String URL = qb.buildObjectsSaveURL(contact);
+            response = post(URL,json);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // TODO gérer les erreurs serveur + gérer les duplicata
+        System.out.println(response);
+        return true;
+
+    }
+
+    String post(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+        catch (Exception e) {
+            return "";
         }
     }
 

@@ -21,19 +21,22 @@
         tools:replace="android:supportsRtl">
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login">
+            android:label="@string/title_activity_login"></activity>
+        <activity
+            android:name=".Check"
+            android:screenOrientation="portrait">
+
+        </activity>
+        <activity
+            android:name=".AdminActivity"
+            android:label="@string/title_activity_admin"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Check"
-            android:screenOrientation="portrait">
-
-        </activity>
-
     </application>
 
 </manifest>

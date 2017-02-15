@@ -10,7 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="fr.jlm2017.pap.Check">
 
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
