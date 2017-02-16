@@ -1,12 +1,12 @@
 package fr.jlm2017.pap;
 
-import fr.jlm2017.pap.MongoDB.DBObject;
+import fr.jlm2017.pap.MongoDB.DataObject;
 
 /**
  * Created by thoma on 15/02/2017.
  */
 
-public class Porte extends DBObject{
+public class Porte extends DataObject {
 
     public String adresse;
     public String ville;

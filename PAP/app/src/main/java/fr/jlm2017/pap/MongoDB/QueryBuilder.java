@@ -48,7 +48,7 @@ public class QueryBuilder {
      * Builds a complete URL using the methods specified above
      * @return
      */
-    public String buildObjectsSaveURL(DBObject objects) //objects = "militants" ou "portes"
+    public String buildObjectsSaveOrGetURL(DataObject objects) //objects = "militants" ou "portes"
     {
         String solution;
         if(objects.getClass()==Militant.class)
@@ -58,12 +58,26 @@ public class QueryBuilder {
         else {
             solution = "portes";
         }
-        return buildObjectsSaveURL(solution);
+        return buildObjectsSaveOrGetURL(solution);
     }
 
-    public String buildObjectsSaveURL(String objects) //objects = "militants" ou "portes"
+    public String buildObjectsSaveOrGetURL(String objects) //objects = "militants" ou "portes"
     {
         return getBaseUrl()+objects+docApiKeyUrl();
+    }
+
+
+    public String buildObjectsUpdateURL(DataObject objects) //URL d'update
+    {
+        String solution;
+        if(objects.getClass()==Militant.class)
+        {
+            solution = "militants";
+        }
+        else {
+            solution = "portes";
+        }
+        return getBaseUrl()+solution+"/"+objects.id_ +docApiKeyUrl();
     }
 
     /**
@@ -72,7 +86,7 @@ public class QueryBuilder {
      * @return
      */
 
-    public String createObject(DBObject contact) {
+    public String createObject(DataObject contact) {
         if(contact.getClass()==Militant.class)
         {
             return createMilitant((Militant) contact);
@@ -87,8 +101,8 @@ public class QueryBuilder {
         return String
                 .format("{\"militant\"  : {\"pseudo\": \"%s\", "
                                 + " \"email\": \"%s\", "
-                                + "\"password\": \"%s\",\"admin\": \"%b\" }, \"safe\" : true}",
-                        contact.pseudo, contact.email, contact.password, contact.isAdmin);
+                                + "\"password\": \"%s\",\"admin\": \"%b\" }}",
+                        contact.pseudo, contact.email, contact.password, contact.admin);
     }
 
     public String createPorte(Porte contact)
@@ -97,11 +111,40 @@ public class QueryBuilder {
                 .format("{\"porte\"  : {\"adresse\": \"%s\", "
                                 + "\"ville\": \"%s\", \"ouverte\": \"%b\", "
                                 + "\"revenir\": \"%b\", \"latitude\": \"%f\","
-                                + "\"longitude\": \"%f\"}, \"safe\" : true}",
+                                + "\"longitude\": \"%f\"}}",
                         contact.adresse, contact.ville, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
     }
 
 
+    //pour l'update on rajoute "set" devant :
 
+    public String setObject(DataObject contact) {
+        if(contact.getClass()==Militant.class)
+        {
+            return setMilitant((Militant) contact);
+        }
+        else {
+            return setPorte((Porte) contact);
+        }
+    }
+
+    public String setMilitant(Militant contact)
+    {
+        return String
+                .format("{\"$set\" : {\"pseudo\": \"%s\", "
+                                + " \"email\": \"%s\", "
+                                + "\"password\": \"%s\",\"admin\": \"%b\" }}",
+                        contact.pseudo, contact.email, contact.password, contact.admin);
+    }
+
+    public String setPorte(Porte contact)
+    {
+        return String
+                .format("{\"$set\" : {\"adresse\": \"%s\", "
+                                + "\"ville\": \"%s\", \"ouverte\": \"%b\", "
+                                + "\"revenir\": \"%b\", \"latitude\": \"%f\","
+                                + "\"longitude\": \"%f\"}}",
+                        contact.adresse, contact.ville, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
+    }
 }
 

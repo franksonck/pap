@@ -1,15 +1,20 @@
 package fr.jlm2017.pap;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.concurrent.ExecutionException;
 
 import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 
@@ -60,10 +65,24 @@ public class ajoutMilitantTab extends Fragment {
                     String basePWD = getResources().getString(R.string.basePWD);
                     Militant mil = new Militant("toto", email, basePWD, mIsAdmin.isChecked());
                     SaveAsyncTask saveMil = new SaveAsyncTask();
-                    saveMil.execute(mil);
+                    Pair<Boolean, String> result;
+                    try {
+                        result = saveMil.execute(mil).get();
+                        mil.id_=result.second;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
-                    String message = "Vous avez bien ajouté : " + mil.toString();
-                    Check.showLongToast(message);
+                    //on actualise l'affichage dans le Fragement de suppression
+
+                    final Intent intent = new Intent("DATA_ACTION");
+                    intent.putExtra("DATA_EXTRA", mil);
+                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+
+                    String message = "Vous avez bien ajouté un militant";
+                    showLongToast(message);
                     resetUI();
                 }
             }
@@ -77,5 +96,9 @@ public class ajoutMilitantTab extends Fragment {
         mEmail.setText("");
         mIsAdmin.setChecked(false);
 
+    }
+
+    public void showLongToast(String message) {
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 }

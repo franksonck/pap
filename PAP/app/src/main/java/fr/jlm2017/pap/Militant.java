@@ -4,27 +4,31 @@ package fr.jlm2017.pap;
  * Created by thoma on 14/02/2017.
  */
 
-import fr.jlm2017.pap.MongoDB.DBObject;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Militant extends DBObject {
+import fr.jlm2017.pap.MongoDB.DataObject;
+
+public class Militant extends DataObject implements Parcelable {
 
     public String pseudo;
     public String email;
     public String password;
-    public boolean isAdmin;
+    public boolean admin;
+
 
     public Militant(String email, String password) {
         pseudo = email.substring(0,email.indexOf('@'));
         this.email = email;
         this.password = password;
-        isAdmin =false;
+        admin =false;
     }
 
     public Militant(String pseudo, String email, String password, boolean isAdmin) {
         this.pseudo = pseudo;
         this.email = email;
         this.password = password;
-        this.isAdmin = isAdmin;
+        this.admin = isAdmin;
     }
 
     @Override
@@ -32,7 +36,41 @@ public class Militant extends DBObject {
         return "Militant{" +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", isAdmin=" + isAdmin +
+                ", isAdmin=" + admin +
                 '}';
+    }
+    // pour pouvoir etre Parcelable et s'envoyer avec des Intent
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int i) {
+        dest.writeString(pseudo);
+        dest.writeString(email);
+        dest.writeString(password);
+        dest.writeString(String.valueOf(admin));
+        dest.writeString(this.id_);
+    }
+
+    public static final Parcelable.Creator<Militant> CREATOR = new Parcelable.Creator<Militant>() {
+        @Override
+        public Militant createFromParcel(Parcel source) {
+            return new Militant(source);
+        }
+
+        @Override
+        public Militant[] newArray(int size) {
+            return new Militant[size];
+        }
+    };
+
+    public Militant(Parcel in) {
+        pseudo = in.readString();
+        email = in.readString();
+        password = in.readString();
+        admin=Boolean.parseBoolean(in.readString());
+        this.id_=in.readString();
     }
 }
