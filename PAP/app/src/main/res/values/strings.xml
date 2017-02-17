@@ -9,6 +9,7 @@
     <string name="action_sign_in">Connexion</string>
     <string name="action_sign_in_short">Connexion</string>
     <string name="error_invalid_email">Adresse e-mail invalide</string>
+    <string name="error_unknown_email">Adresse e-mail inconnue</string>
     <string name="error_invalid_password">Mot de passe incorrect</string>
     <string name="error_incorrect_password">Mot de passe incorrect</string>
     <string name="error_field_required">Veuillez remplir ce champ</string>
@@ -20,6 +21,10 @@
     <string name="admin">Admin ?</string>
     <string name="ajouter_le_militant">Ajouter le militant</string>
     <string name="email">e-mail</string>
+    <string name="dialog_title">Confirmez-vous ?</string>
+    <string name="dialog_message">Voulez vous vraiment supprimer :</string>
+    <string name="ok">Confirmer</string>
+    <string name="cancel">Annuler</string>
 
     <!-- Strings in the Check Activity -->
 

@@ -1,5 +1,9 @@
 package fr.jlm2017.pap.MongoDB;
 
+import android.util.Pair;
+
+import java.util.ArrayList;
+
 import fr.jlm2017.pap.Militant;
 import fr.jlm2017.pap.Porte;
 
@@ -48,7 +52,7 @@ public class QueryBuilder {
      * Builds a complete URL using the methods specified above
      * @return
      */
-    public String buildObjectsSaveOrGetURL(DataObject objects) //objects = "militants" ou "portes"
+    public String buildObjectsSaveURL(DataObject objects) //objects = "militants" ou "portes"
     {
         String solution;
         if(objects.getClass()==Militant.class)
@@ -58,12 +62,35 @@ public class QueryBuilder {
         else {
             solution = "portes";
         }
-        return buildObjectsSaveOrGetURL(solution);
+        return buildObjectsSaveURL(solution);
     }
 
-    public String buildObjectsSaveOrGetURL(String objects) //objects = "militants" ou "portes"
+    public String buildObjectsSaveURL(String objects) //objects = "militants" ou "portes"
     {
         return getBaseUrl()+objects+docApiKeyUrl();
+    }
+
+    public String builObjectGetAllURL(String objects) {
+        return buildObjectsSaveURL(objects);
+    }
+
+    public String builObjectGetFilteredURL(String objects, ArrayList<Pair<String,String>> ids) { // on donne une collection et des couples id, valeur pour filtrer
+        String id;
+        if(objects.equals("militants"))
+        {
+            id="militant";
+        }
+        else {
+            id="porte";
+        }
+        String res = getBaseUrl()+objects+"?q={$and:[";
+        for(int i = 0; i<ids.size();i++)
+        {
+            res =res + "{\""+id+"."+ids.get(i).first+"\":\""+ids.get(i).second+"\"}";
+            if(i<ids.size()-1) res=res+",";
+        }
+        res=res+"]}&apiKey="+getApiKey();
+        return res;
     }
 
 
@@ -131,19 +158,19 @@ public class QueryBuilder {
     public String setMilitant(Militant contact)
     {
         return String
-                .format("{\"$set\" : {\"pseudo\": \"%s\", "
+                .format("{\"$set\" : {\"militant\" : {\"pseudo\": \"%s\", "
                                 + " \"email\": \"%s\", "
-                                + "\"password\": \"%s\",\"admin\": \"%b\" }}",
+                                + "\"password\": \"%s\",\"admin\": \"%b\" }}}",
                         contact.pseudo, contact.email, contact.password, contact.admin);
     }
 
     public String setPorte(Porte contact)
     {
         return String
-                .format("{\"$set\" : {\"adresse\": \"%s\", "
+                .format("{\"$set\" : {\"porte\" :{\"adresse\": \"%s\", "
                                 + "\"ville\": \"%s\", \"ouverte\": \"%b\", "
                                 + "\"revenir\": \"%b\", \"latitude\": \"%f\","
-                                + "\"longitude\": \"%f\"}}",
+                                + "\"longitude\": \"%f\"}}}",
                         contact.adresse, contact.ville, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
     }
 }

@@ -14,8 +14,6 @@ import okhttp3.Response;
 import android.os.AsyncTask;
 import android.util.Pair;
 
-import com.google.gson.Gson;
-
 
 public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,String>> {
 
@@ -37,7 +35,7 @@ public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,Stri
         Pair<String, Boolean> result =null;
         String response = "";
         try {
-            String URL = qb.buildObjectsSaveOrGetURL(contact);
+            String URL = qb.buildObjectsSaveURL(contact);
             result = post(URL,json);
             response =result.first;
         } catch (IOException e) {

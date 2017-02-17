@@ -16,8 +16,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-
-public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,String>>>, Void, Pair<ArrayList<DataObject>, Boolean>> {
+public class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<DataObject>, Boolean>> {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -25,10 +24,10 @@ public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,St
     public OkHttpClient client;
 
     @Override
-    protected Pair<ArrayList<DataObject>, Boolean> doInBackground(Pair<String,ArrayList<Pair<String,String>>>... arg0) {
+    protected Pair<ArrayList<DataObject>, Boolean> doInBackground(String... arg0) {
 
         ArrayList<DataObject> objectsGet = new ArrayList<>();
-        Pair<String,ArrayList<Pair<String,String>>> contact = arg0[0];
+        String contact = arg0[0];
 
         QueryBuilder qb = new QueryBuilder();
 
@@ -38,17 +37,17 @@ public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,St
         Pair<String, Boolean> result =null;
         String response = "";
         try {
-            String URL = qb.builObjectGetFilteredURL(contact.first,contact.second);
+            String URL = qb.builObjectGetAllURL(contact);
             result = getFromDB(URL);
             response = result.first;
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        // TODO gérer les erreurs serveur + gérer les duplicata
         System.out.println(response);
         if(result.second){
             String updatedJson = "{\"data\" : " + response + "}";
-            if(contact.first == "militants") {
+            if(contact == "militants") {
                 DataWrapperMilitant dataWrapper = DataWrapperMilitant.fromJson(updatedJson);
                 for (DataWrapperMilitant.BigDataMilitant big : dataWrapper.data) {
                     big.militant.id_=big._id.$oid;

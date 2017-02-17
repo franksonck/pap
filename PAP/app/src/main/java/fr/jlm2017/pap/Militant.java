@@ -33,11 +33,11 @@ public class Militant extends DataObject implements Parcelable {
 
     @Override
     public String toString() {
-        return "Militant{" +
+        return "Militant{ pseudo ='" + pseudo + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", isAdmin=" + admin +
-                '}';
+                ", id='" + this.id_ + "'}";
     }
     // pour pouvoir etre Parcelable et s'envoyer avec des Intent
     @Override

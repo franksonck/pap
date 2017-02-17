@@ -29,11 +29,13 @@ import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 
 public class Check extends AppCompatActivity {
 
+    public static int USER_CHANGED_CODE =1259;
     // other variables
     private int streetNum, appartNum;
     private String streetName, bisTer, cityName;
     private double latitude, longitude;
     private boolean isAppart, isOpen, comeBack, numFilled, positionOK;
+    private Militant user;
 
     //views variables
     private Button mAddDoor, mGPS;
@@ -107,6 +109,8 @@ public class Check extends AppCompatActivity {
         checkComeBack.setAlpha(0);
         isAppart = false;
         initValues();
+
+        user = getIntent().getParcelableExtra("USER_EXTRA");
 
         //GPS
         GPSInit();
@@ -251,6 +255,7 @@ public class Check extends AppCompatActivity {
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_admin, menu);
+        if(!user.admin) menu.getItem(0).setEnabled(false);
         m = menu;
         return true;
     }
@@ -261,12 +266,17 @@ public class Check extends AppCompatActivity {
         switch(item.getItemId())
         {
             case R.id.logout:
-                Intent logout = new Intent(Check.this, LoginActivity.class);
-                Check.this.startActivity(logout);
+                finish();
                 return true;
             case R.id.adminLog:
                 Intent goAdmin = new Intent(Check.this, AdminActivity.class);
+                goAdmin.putExtra("USER_EXTRA", user);
                 Check.this.startActivity(goAdmin);
+                return true;
+            case R.id.updateUser:
+                Intent goUpdate = new Intent(Check.this, UpdateUserActivity.class);
+                goUpdate.putExtra("USER_EXTRA", user);
+                Check.this.startActivityForResult(goUpdate,USER_CHANGED_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -337,7 +347,17 @@ public class Check extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // On vérifie tout d'abord à quel intent on fait référence ici à l'aide de notre identifiant
+        if (requestCode == USER_CHANGED_CODE) {
+            // On vérifie aussi que l'opération s'est bien déroulée
+            if (resultCode == RESULT_OK) {
+                // On affiche le bouton qui a été choisi
+                user = data.getParcelableExtra("USER_EXTRA");
+            }
+        }
+    }
 
 
 }
