@@ -1,19 +1,26 @@
 package fr.jlm2017.pap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.transition.Slide;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -23,8 +30,8 @@ import java.util.concurrent.ExecutionException;
 import android.util.Pair;
 import android.widget.Toast;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.MongoDB.DataObject;
-import fr.jlm2017.pap.MongoDB.GetAllAsyncTask;
 import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 
 
@@ -34,87 +41,96 @@ import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 public class LoginActivity extends AppCompatActivity {
 
     public static boolean installed = false;
-    public static int BACK_FROM_CHECK =11001;
-    /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
+    private static String SavedEmailsPreference = "SavedEmails_";
 
     public static boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");
     }
-
     public boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() > 0;
     }
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world", "t@t:t"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
     private Militant regMilitant;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private ButtonAnimationJLM mEmailSignInButtonAnimated;
 
+    private void setupWindowAnimations() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+            Slide slide = new Slide();
+            slide.setDuration(getResources().getInteger(R.integer.transition_time_between_activites));
+            getWindow().setExitTransition(slide);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setupWindowAnimations();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        addShortcut(getBaseContext()); // TODO vide, a corriger
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
+        populateAutoComplete();
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 int imeActionId = EditorInfo.IME_ACTION_DONE;
-                if (id == imeActionId && mEmailView.getText().toString()!="") {
-                    attemptLogin();
+                if (id == imeActionId) {
+                    mPasswordView.clearFocus();
+                    hideKeyboard(LoginActivity.this);
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEmailSignInButtonAnimated.button.callOnClick();
+                        }
+                    }, 10);
+
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        mEmailSignInButtonAnimated = new ButtonAnimationJLM((CircularProgressButton) findViewById(R.id.email_sign_in_button));
+        mEmailSignInButtonAnimated.button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
 
-
     }
 
-    // ** add shortcut to desktop
+    private void populateAutoComplete() {
+        List<String> mails =getSharedPreferenceStringList(this);
+        addEmailsToAutoComplete(mails);
+    }
 
-    public static void addShortcut(Context context)
-    {
-/*        Intent shortcutIntent = new Intent();
-        shortcutIntent.setClassName("com.telespree.android.client", "com.telespree.android.client.ShortcutTest");
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    public static void addMailSharedPreference(Context pContext, String pData) {
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(pContext);
+        SharedPreferences.Editor editor = shared.edit();
+        int size = shared.getInt(SavedEmailsPreference + "size", 0);
+        for (int i = 0; i < size; i++) {
+            if(shared.getString(SavedEmailsPreference + i, "").equals(pData))return; // on vérifie que le mail n'est pas deja sauvé
+        }
+        editor.putInt(SavedEmailsPreference + "size",size+1);
+        editor.putString(SavedEmailsPreference + size,pData);
+        editor.apply();
+    }
 
-        Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
-        intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, "ShortcutTest");
-        intent.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, Intent.ShortcutIconResource.fromContext(context, R.drawable.com_facebook_button_icon));
-        intent.setAction("com.android.launcher.action.INSTALL_SHORTCUT");
-        intent.putExtra("duplicate", false);
-        context.sendBroadcast(intent);*/
+    public static List<String> getSharedPreferenceStringList(Context pContext) {
+        SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(pContext);
+        int size = shared.getInt(SavedEmailsPreference + "size", 0);
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(shared.getString(SavedEmailsPreference + i, ""));
+        }
+        return list;
     }
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -126,33 +142,68 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
+        mEmailSignInButtonAnimated.button.startAnimation();
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+        if (!isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
             mEmailView.requestFocus(); return;
         } else if (TextUtils.isEmpty(password)) {
             mPasswordView.setError(getString(R.string.error_field_required));
             mPasswordView.requestFocus(); return;
         } else  {
-            int correct  = isEmailAndPasswordOK(email,password);
+            int correct  = isEmailAndPasswordOK(email,password); // vérification avec la BDD
+            //animation tools 1/////////////////////////
+            final Handler handler = new Handler();
+            int timing = getResources().getInteger(R.integer.contracting_time_animation);
+            //animation tools 1- end/////////////////////////
             switch(correct) {
-                case -1 : mEmailView.setError(getString(R.string.error_unknown_email));
-                    mEmailView.requestFocus(); return;
-                case -2 : mPasswordView.setError(getString(R.string.error_incorrect_password));
-                    mPasswordView.requestFocus(); return;
-                case 0 : Intent logged = new Intent(LoginActivity.this,Check.class);
-                    logged.putExtra("USER_EXTRA", regMilitant);
-                    LoginActivity.this.startActivity(logged); return;
+                case -1 :
+                    //animation tools 2/////////////////////////
+                    mEmailSignInButtonAnimated.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mEmailView.setError(getString(R.string.error_unknown_email));
+                        mEmailView.requestFocus();
+                    }
+                    }, timing);
+                    //animation tools 2-end/////////////////////////
+                    return;
+                case -2 :
+                    mEmailSignInButtonAnimated.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
+                            mPasswordView.requestFocus();
+                        }
+                    }, timing);
+                    return;
+
+                case 0 :
+                    addMailSharedPreference(this,email); // l'email est ok, on essaie de l'ajouter
+                    mEmailSignInButtonAnimated.OKButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            final Intent logged = new Intent(LoginActivity.this,Check.class); // login OK on passe à CHeck
+                            logged.putExtra("USER_EXTRA", regMilitant); // on envoie a Check les données utilisateur
+                            LoginActivity.this.startActivity(logged);
+                        }
+                    }, timing);
+                    return;
+
                 default : return;
             }
 
         }
     }
+
 
     private int isEmailAndPasswordOK(String email, String password) {
         GetAsyncTask tsk = new GetAsyncTask();
@@ -172,6 +223,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
             else {
+                mEmailSignInButtonAnimated.WrongButtonAnimation();
                 Toast.makeText(this,"connexion à la BDD impossible, êtes vous bien connecté à internet ?",Toast.LENGTH_LONG);
             }
 
@@ -186,6 +238,18 @@ public class LoginActivity extends AppCompatActivity {
     // TODO : cryptage des passwords
     public static String encode(String password) {
         return password;
+    }
+
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 

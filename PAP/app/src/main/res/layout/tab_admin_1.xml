@@ -8,6 +8,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="fr.jlm2017.pap.AdminActivity">
 
+    <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:layout_width="0px"
+        android:layout_height="0px"/>
     <android.support.design.widget.TextInputLayout
         android:id="@+id/emailLayout"
         android:layout_width="wrap_content"
@@ -23,7 +30,10 @@
             android:id="@+id/emailNewMilitant"
             android:hint="@string/email"
             android:layout_centerInParent="false"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:imeOptions="actionDone"
+            android:nextFocusUp="@id/emailNewMilitant"
+            android:nextFocusLeft="@id/emailNewMilitant"/>
     </android.support.design.widget.TextInputLayout>
 
     <CheckBox

@@ -10,96 +10,96 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="fr.jlm2017.pap.UpdateUserActivity">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
+        <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
         <LinearLayout
+            android:orientation="horizontal"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_width="0px"
+            android:layout_height="0px"/>
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
-
-            <android.support.design.widget.TextInputLayout
+            android:layout_weight="1">
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textPersonName"
-                    android:ems="10"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/PseudoUpdate"
-                    android:hint="Pseudo"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginTop="20dp"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textEmailAddress"
-                    android:ems="10"
-                    android:id="@+id/emailUpdate"
-                    android:layout_alignParentStart="true"
-                    android:hint="@string/email"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="20dp"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1">
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inputType="textPassword"
-                    android:ems="10"
-                    android:id="@+id/passwordUpdate"
-                    android:hint="Password"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginBottom="40dp"/>
-            </android.support.design.widget.TextInputLayout>
-
-            <CheckedTextView
-                android:text="Admin ?"
-                android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:id="@+id/isAdminUpdate"
+                android:id="@+id/PseudoUpdate"
+                android:hint="Pseudo"
                 android:layout_weight="1"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:imeOptions="actionDone"
+                android:nextFocusUp="@id/PseudoUpdate"
+                android:nextFocusLeft="@id/PseudoUpdate"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textEmailAddress"
+                android:ems="10"
+                android:id="@+id/emailUpdate"
+                android:layout_alignParentStart="true"
+                android:hint="@string/email"
+                android:layout_weight="1"
+                android:layout_marginBottom="20dp"
+                android:imeOptions="actionDone"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textPassword"
+                android:ems="10"
+                android:id="@+id/passwordUpdate"
+                android:hint="Password"
+                android:layout_alignParentStart="true"
                 android:layout_marginBottom="40dp"
-                android:checkMark="@android:drawable/checkbox_on_background"
-                android:layout_width="100dp"
-                android:checked="false" />
+                android:imeOptions="actionDone"/>
+        </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:text="Sauver"
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:id="@+id/SaveUpdate"
-                android:layout_centerHorizontal="true"
-                android:layout_weight="1"
-                android:layout_marginBottom="20dp"/>
+        <CheckedTextView
+            android:text="Admin ?"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:id="@+id/isAdminUpdate"
+            android:layout_marginBottom="30dp"
+            android:checkMark="@drawable/btn_check_buttonless_on"
+            android:layout_width="100dp"
+            android:checked="false" />
 
-            <Button
-                android:text="Annuler"
-                android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:id="@+id/cancelUpdate" />
+        <Button
+            android:text="Sauver"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:id="@+id/SaveUpdate"
+            android:layout_weight="1"
+            android:layout_marginBottom="20dp"/>
 
-        </LinearLayout>
-    </ScrollView>
+        <Button
+            android:text="Annuler"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:id="@+id/cancelUpdate" />
+
+    </LinearLayout>
 
 </RelativeLayout>

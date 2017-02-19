@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="integer" name="customImeActionId" format="integer">100</item>
+    <item type="integer" name="transition_time_between_activites" format="integer">3200</item>
+    <item type="integer" name="loading_time_animation" format="integer">1000</item>
+    <item type="integer" name="loading_end_time_animation" format="integer">2000</item>
+    <item type="integer" name="contracting_time_animation" format="integer">3000</item>
 </resources>

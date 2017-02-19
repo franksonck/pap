@@ -26,7 +26,15 @@
     <string name="ok">Confirmer</string>
     <string name="cancel">Annuler</string>
 
+    <string name="title_activity_splash_screen">P-a-P JLM2017</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="splash_screen_title">Le Porte-à-Porte Insoumis</string>
+    <string name="app_version">Version 1.0 \n Toc toc Mc Fly !</string>
+
     <!-- Strings in the Check Activity -->
+    <string name="dialog_first_connection">Bienvenue à toi cher Insoumis(e), commence par choisir un pseudo et éventuellement changer ton mot de passe ^^</string>
+
 
 
 </resources>

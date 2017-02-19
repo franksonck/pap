@@ -1,29 +1,37 @@
 package fr.jlm2017.pap;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Fade;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.concurrent.ExecutionException;
+
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 
 
@@ -38,7 +46,8 @@ public class Check extends AppCompatActivity {
     private Militant user;
 
     //views variables
-    private Button mAddDoor, mGPS;
+    private ButtonAnimationJLM mAddDoorAnimation, mGPSmAddDoorAnimation;
+    private CircularProgressButton mAddDoor, mGPS;
     private EditText mAdress, mNumS, mNumA, mCity;
     private TextInputLayout appartLayout;
     private CheckBox bisButton, terButton;
@@ -84,13 +93,17 @@ public class Check extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //animation venant de l'activité précédente
+        setupWindowAnimations();
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_check);
 
         //widgets
-        mAddDoor = (Button) findViewById(R.id.AddDoor);
-        mGPS = (Button) findViewById(R.id.GPSButton);
+        mAddDoor = (CircularProgressButton) findViewById(R.id.AddDoor);
+        mAddDoorAnimation = new ButtonAnimationJLM(mAddDoor);
+        mGPS = (CircularProgressButton) findViewById(R.id.GPSButton);
+        mGPSmAddDoorAnimation = new ButtonAnimationJLM(mGPS);
         mAdress = (EditText) findViewById(R.id.Adress);
         mNumA = (EditText) findViewById(R.id.DoorNum);
         appartLayout = (TextInputLayout) findViewById(R.id.DoorNumLayout) ;
@@ -120,6 +133,42 @@ public class Check extends AppCompatActivity {
         addAttemptListener();
         UIListeners();
 
+
+
+    }
+
+    private void setupWindowAnimations() {
+        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        Fade fade = new Fade();
+        fade.setDuration(getResources().getInteger(R.integer.transition_time_between_activites));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setEnterTransition(fade);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(user.pseudo.equals("")) dialogFirstConnection();
+    }
+
+    private void dialogFirstConnection() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.dialog_first_connection)
+                .setTitle("Première connexion");
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                Intent goUpdate = new Intent(Check.this, UpdateUserActivity.class);
+                goUpdate.putExtra("USER_EXTRA", user);
+                goUpdate.putExtra("USER_FIRST",true);
+                Check.this.startActivityForResult(goUpdate,USER_CHANGED_CODE);
+            }
+        });
+        AlertDialog box = builder.create();
+        box.show();
     }
 
     private void UIListeners() {
@@ -189,6 +238,8 @@ public class Check extends AppCompatActivity {
 
             public void onClick(View v) {
 
+                mAddDoor.startAnimation();
+
                 String num = mNumS.getText().toString().trim();
                 if (!num.equals("")) {
                     streetNum = Integer.parseInt(num);
@@ -207,6 +258,10 @@ public class Check extends AppCompatActivity {
                 streetName = mAdress.getText().toString();
                 cityName = mCity.getText().toString();
 
+                //animation tools 1/////////////////////////
+                final Handler handler = new Handler();
+                int timing = getResources().getInteger(R.integer.contracting_time_animation);
+                //animation tools 1- end/////////////////////////
                 if (numFilled) {
                     if (!streetName.equals("")) {
                         if(!cityName.equals("")) {
@@ -218,29 +273,74 @@ public class Check extends AppCompatActivity {
                                 Porte porte = new Porte(street, cityName, isOpen, comeBack, latitude, longitude);
 
                                 SaveAsyncTask saveDoor = new SaveAsyncTask();
-                                saveDoor.execute(porte);
-
-                                String message = "Vous avez bien toqué au : " + street;
-                                showLongToast(message);
-                                resetUI();
-                                initValues();
-
+                                try {
+                                    Pair<Boolean , String> result = saveDoor.execute(porte).get();
+                                    //animation tools 2/////////////////////////
+                                    mAddDoorAnimation.OKButtonAnimation();
+                                    final String finalStreet = street;
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            String message = "Vous avez bien toqué au : " + finalStreet;
+                                            showLongToast(message);
+                                            resetUI();
+                                            initValues();
+                                        }
+                                    }, timing);
+                                    //animation tools 2-end/////////////////////////
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                }
                             } else {
-                                String message = "Veuillez rentrer un numéro d'appartement ou décocher \"Appartement\"";
-                                showToast(message);
+                                //animation tools 2/////////////////////////
+                                mAddDoorAnimation.WrongButtonAnimation();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mNumA.setError("Veuillez rentrer un numéro d'appartement");
+                                        mNumA.requestFocus();
+                                    }
+                                }, timing);
+                                //animation tools 2-end/////////////////////////
                             }
                         }
                         else {
-                            String message = "Veuillez rentrer une ville";
-                            showToast(message);
+                            //animation tools 2/////////////////////////
+                            mAddDoorAnimation.WrongButtonAnimation();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mCity.setError("Veuillez rentrer une ville");
+                                    mCity.requestFocus();
+                                }
+                            }, timing);
+                            //animation tools 2-end/////////////////////////
                         }
                     } else {
-                        String message = "Veuillez rentrer une adresse";
-                        showToast(message);
+                        //animation tools 2/////////////////////////
+                        mAddDoorAnimation.WrongButtonAnimation();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAdress.setError("Veuillez rentrer une adresse");
+                                mAdress.requestFocus();
+                            }
+                        }, timing);
+                        //animation tools 2-end/////////////////////////
                     }
                 } else {
-                    String message = "Veuillez rentrer le numéro correspondant à l'adresse";
-                    showToast(message);
+                    //animation tools 2/////////////////////////
+                    mAddDoorAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mNumS.setError("Veuillez rentrer le numéro");
+                            mNumS.requestFocus();
+                        }
+                    }, timing);
+                    //animation tools 2-end/////////////////////////
                 }
             }
         });
@@ -276,6 +376,7 @@ public class Check extends AppCompatActivity {
             case R.id.updateUser:
                 Intent goUpdate = new Intent(Check.this, UpdateUserActivity.class);
                 goUpdate.putExtra("USER_EXTRA", user);
+                goUpdate.putExtra("USER_FIRST",false);
                 Check.this.startActivityForResult(goUpdate,USER_CHANGED_CODE);
                 return true;
         }
@@ -287,15 +388,28 @@ public class Check extends AppCompatActivity {
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                //animation tools 1/////////////////////////
+                final Handler handler = new Handler();
+                int timing = getResources().getInteger(R.integer.contracting_time_animation);
+                //animation tools 1- end/////////////////////////
+                //animation tools 2/////////////////////////
+                mGPSmAddDoorAnimation.OKButtonAnimation();
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
-                positionOK = true;
-                String message = "Position récupérée : "+ latitude + " ; " + longitude;
-                showToast(message);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        positionOK = true;
+                        String message = "Position récupérée : "+ latitude + " ; " + longitude;
+                        showToast(message);
 
-                // on résactive l'envoi
-                mAddDoor.setText("ENVOYER");
-                mAddDoor.setEnabled(true);
+                        // on résactive l'envoi
+                        mAddDoor.setText("ENVOYER");
+                        mAddDoor.setEnabled(true);
+                    }
+                }, timing);
+                //animation tools 2-end/////////////////////////
+
             }
 
             @Override
@@ -330,7 +444,7 @@ public class Check extends AppCompatActivity {
                 // on désactive l'envoi tant que le GPS n'est pas ok
                 mAddDoor.setText("En attente du GPS");
                 mAddDoor.setEnabled(false);
-
+                mGPS.startAnimation();
                 locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null); // on essaie avec la précision max
                 if(!positionOK) locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
             }
@@ -352,10 +466,11 @@ public class Check extends AppCompatActivity {
         // On vérifie tout d'abord à quel intent on fait référence ici à l'aide de notre identifiant
         if (requestCode == USER_CHANGED_CODE) {
             // On vérifie aussi que l'opération s'est bien déroulée
-            if (resultCode == RESULT_OK) {
-                // On affiche le bouton qui a été choisi
-                user = data.getParcelableExtra("USER_EXTRA");
+            switch(resultCode) {
+                case RESULT_OK :  user = data.getParcelableExtra("USER_EXTRA"); return;
+                default : return;
             }
+
         }
     }
 

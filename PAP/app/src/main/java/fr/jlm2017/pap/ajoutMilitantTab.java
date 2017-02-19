@@ -14,8 +14,10 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 
 /**
@@ -45,50 +47,56 @@ public class ajoutMilitantTab extends Fragment {
                 boolean cancel = false;
                 View focusView = null;
 
-                if (TextUtils.isEmpty(email)) {
-                    mEmail.setError(getString(R.string.error_field_required));
-                    focusView = mEmail;
-                    cancel = true;
-                } else if (!LoginActivity.isEmailValid(email)) {
-                    mEmail.setError(getString(R.string.error_invalid_email));
-                    focusView = mEmail;
-                    cancel = true;
+                if(!verifyEmail()) { mEmail.setError("Email invalide ou déjà pris");
+                    mEmail.requestFocus(); return; 
+                }
+                
+                String basePWD = getResources().getString(R.string.basePWD);
+                Militant mil = new Militant("", email, basePWD, mIsAdmin.isChecked());
+                SaveAsyncTask saveMil = new SaveAsyncTask();
+                Pair<Boolean, String> result;
+                try {
+                    result = saveMil.execute(mil).get();
+                    mil.id_=result.second;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
                 }
 
-                if (cancel) {
-                    // There was an error; don't attempt login and focus the first
-                    // form field with an error.
-                    focusView.requestFocus();
-                } else {
-                    // Show a progress spinner, and kick off a background task to
-                    // perform the user login attempt.
-                    String basePWD = getResources().getString(R.string.basePWD);
-                    Militant mil = new Militant("toto", email, basePWD, mIsAdmin.isChecked());
-                    SaveAsyncTask saveMil = new SaveAsyncTask();
-                    Pair<Boolean, String> result;
-                    try {
-                        result = saveMil.execute(mil).get();
-                        mil.id_=result.second;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
+                //on actualise l'affichage dans le Fragement de suppression
 
-                    //on actualise l'affichage dans le Fragement de suppression
+                final Intent intent = new Intent("DATA_ACTION");
+                intent.putExtra("DATA_EXTRA", mil);
+                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 
-                    final Intent intent = new Intent("DATA_ACTION");
-                    intent.putExtra("DATA_EXTRA", mil);
-                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
-
-                    String message = "Vous avez bien ajouté un militant";
-                    showLongToast(message);
-                    resetUI();
-                }
+                String message = "Vous avez bien ajouté un militant";
+                showLongToast(message);
+                resetUI();
+                
             }
         });
 
         return rootView;
+    }
+
+    private boolean verifyEmail() {
+        String email = mEmail.getText().toString();
+        boolean res= false;
+        if(LoginActivity.isEmailValid(email)){
+            GetAsyncTask tsk = new GetAsyncTask();
+            ArrayList<Pair<String,String>> ids = new ArrayList<>();
+            ids.add(Pair.create("email",email));
+            try {
+                if(!(tsk.execute(Pair.create("militants",ids)).get()).first.isEmpty()) return false; //on interdit de prendre le meme mail qu'un autre militant
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            res=true;
+        }
+        return res;
     }
 
     private void resetUI () {
