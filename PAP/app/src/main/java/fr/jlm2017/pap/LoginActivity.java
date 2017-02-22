@@ -5,18 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.transition.Slide;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
@@ -56,14 +53,15 @@ public class LoginActivity extends AppCompatActivity {
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private ButtonAnimationJLM mEmailSignInButtonAnimated;
+    private static int USER_LOG_OUT = 1002;
 
-    private void setupWindowAnimations() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    private void setupWindowAnimations() { //TODO animations de transition
+/*        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
             Slide slide = new Slide();
             slide.setDuration(getResources().getInteger(R.integer.transition_time_between_activites));
             getWindow().setExitTransition(slide);
-        }
+        }*/
     }
 
     @Override
@@ -100,9 +98,16 @@ public class LoginActivity extends AppCompatActivity {
         mEmailSignInButtonAnimated.button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                mEmailSignInButtonAnimated.button.startAnimation();
                 attemptLogin();
             }
         });
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
 
     }
 
@@ -142,25 +147,44 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
-        mEmailSignInButtonAnimated.button.startAnimation();
 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
 
+        //animation tools 1/////////////////////////
+        final Handler handler = new Handler();
+        int timing = getResources().getInteger(R.integer.decontracting_time_animation);
+        //animation tools 1- end/////////////////////////
         // Check for a valid email address.
         if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            mEmailView.requestFocus(); return;
+            //animation tools 2/////////////////////////
+            mEmailSignInButtonAnimated.WrongButtonAnimation();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mEmailView.setError(getString(R.string.error_invalid_email));
+                    mEmailView.requestFocus();
+            }
+            }, timing);
+            //animation tools 2-end/////////////////////////
+            return;
+
         } else if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            mPasswordView.requestFocus(); return;
+            //animation tools 2/////////////////////////
+            mEmailSignInButtonAnimated.WrongButtonAnimation();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mPasswordView.setError(getString(R.string.error_field_required));
+                    mPasswordView.requestFocus();
+                }
+            }, timing);
+            //animation tools 2-end/////////////////////////
+            return;
+
         } else  {
             int correct  = isEmailAndPasswordOK(email,password); // vérification avec la BDD
-            //animation tools 1/////////////////////////
-            final Handler handler = new Handler();
-            int timing = getResources().getInteger(R.integer.contracting_time_animation);
-            //animation tools 1- end/////////////////////////
             switch(correct) {
                 case -1 :
                     //animation tools 2/////////////////////////
@@ -188,12 +212,13 @@ public class LoginActivity extends AppCompatActivity {
                 case 0 :
                     addMailSharedPreference(this,email); // l'email est ok, on essaie de l'ajouter
                     mEmailSignInButtonAnimated.OKButtonAnimation();
+                    timing = getResources().getInteger(R.integer.loading_end_time_animation);
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             final Intent logged = new Intent(LoginActivity.this,Check.class); // login OK on passe à CHeck
                             logged.putExtra("USER_EXTRA", regMilitant); // on envoie a Check les données utilisateur
-                            LoginActivity.this.startActivity(logged);
+                            LoginActivity.this.startActivityForResult(logged,USER_LOG_OUT);
                         }
                     }, timing);
                     return;
@@ -214,7 +239,10 @@ public class LoginActivity extends AppCompatActivity {
             if(result.second) {// on a bien récupéré les données
                 if(result.first.isEmpty()) return -1;
                 Militant mili = (Militant) result.first.get(0);
-                if(mili.password.equals(encode(password))){
+                String hidden = Encoder.encode(password);
+                System.out.println(" pwd : "+ hidden + "\n stored : "+mili.password);
+
+                if(Encoder.decode(password,mili.password)){
                     regMilitant=mili;
                     return 0; // tout ok
                 }
@@ -234,12 +262,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         return -3;
     }
-
-    // TODO : cryptage des passwords
-    public static String encode(String password) {
-        return password;
-    }
-
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -262,6 +284,15 @@ public class LoginActivity extends AppCompatActivity {
         mEmailView.setAdapter(adapter);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // On vérifie tout d'abord à quel intent on fait référence ici à l'aide de notre identifiant
+        if (requestCode == USER_LOG_OUT) {
+            // On vérifie aussi que l'opération s'est bien déroulée
+            mEmailSignInButtonAnimated.revert(R.integer.decontracting_time_animation_onRestart);
+        }
+    }
 
 
 }

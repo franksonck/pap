@@ -17,7 +17,7 @@ import android.util.Pair;
 
 public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,String>> {
 
-    public static final MediaType JSON
+    private static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
     public OkHttpClient client;
@@ -41,19 +41,16 @@ public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,Stri
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // TODO gérer les duplicata
 
-        if(result==null)return null;
-        else {
-                System.out.println(response);
-                String id="";
-                if(contact.getClass()== Militant.class) id= DataWrapperMilitant.IDfromJson(response); // récupère l'ID renvoyé par le server
-                return Pair.create(result.second, id) ;
-        }
+//        System.out.println(response);
+        String id="";
+        assert result != null;
+        if(result.second && contact.getClass()== Militant.class) id= DataWrapperMilitant.IDfromJson(response); // récupère l'ID renvoyé par le server
+        return Pair.create(result.second, id) ;
 
     }
 
-    Pair<String, Boolean> post(String url, String json) throws IOException {
+    private Pair<String, Boolean> post(String url, String json) throws IOException {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -63,7 +60,7 @@ public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,Stri
             return Pair.create(response.body().string(),response.isSuccessful());
         }
         catch (Exception e) {
-            return null;
+            return Pair.create("",false);
         }
     }
 

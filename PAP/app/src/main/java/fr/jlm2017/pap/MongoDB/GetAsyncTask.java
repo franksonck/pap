@@ -24,8 +24,9 @@ public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,St
 
     public OkHttpClient client;
 
+    @SafeVarargs
     @Override
-    protected Pair<ArrayList<DataObject>, Boolean> doInBackground(Pair<String,ArrayList<Pair<String,String>>>... arg0) {
+    protected final Pair<ArrayList<DataObject>, Boolean> doInBackground(Pair<String, ArrayList<Pair<String, String>>>... arg0) {
 
         ArrayList<DataObject> objectsGet = new ArrayList<>();
         Pair<String,ArrayList<Pair<String,String>>> contact = arg0[0];
@@ -45,10 +46,10 @@ public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,St
             e.printStackTrace();
         }
 
-        System.out.println(response);
+        assert result != null;
         if(result.second){
             String updatedJson = "{\"data\" : " + response + "}";
-            if(contact.first == "militants") {
+            if(contact.first.equals("militants")) {
                 DataWrapperMilitant dataWrapper = DataWrapperMilitant.fromJson(updatedJson);
                 for (DataWrapperMilitant.BigDataMilitant big : dataWrapper.data) {
                     big.militant.id_=big._id.$oid;
@@ -69,7 +70,7 @@ public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,St
 
     }
 
-    Pair<String, Boolean> getFromDB(String url) throws IOException {
+    private Pair<String, Boolean> getFromDB(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -77,7 +78,7 @@ public class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<String,St
             return Pair.create(response.body().string(),response.isSuccessful());
         }
         catch (Exception e) {
-            return null;
+            return Pair.create("",false);
         }
     }
 

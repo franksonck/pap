@@ -12,15 +12,15 @@ import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
  * Created by thoma on 20/02/2017.
  */
 
-public class ButtonAnimationJLM {
+class ButtonAnimationJLM {
 
     CircularProgressButton button;
 
-    public ButtonAnimationJLM(CircularProgressButton button) {
+    ButtonAnimationJLM(CircularProgressButton button) {
         this.button = button;
     }
 
-    public void WrongButtonAnimation( ) {
+    void WrongButtonAnimation() {
         final Handler handler = new Handler();
         int timing = button.getResources().getInteger(R.integer.loading_time_animation);
         handler.postDelayed(new Runnable() {
@@ -29,16 +29,10 @@ public class ButtonAnimationJLM {
                 button.doneLoagingAnimation(ContextCompat.getColor(button.getContext(), R.color.JLMred), BitmapFactory.decodeResource(button.getResources(),R.drawable.ic_cross_white_48dp));
             }
         }, timing);
-        timing =  button.getResources().getInteger(R.integer.loading_end_time_animation);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                button.revertAnimation();
-            }
-        }, timing);
+        revert(R.integer.loading_end_time_animation);
     }
 
-    public void OKButtonAnimation( ) {
+    void OKButtonAnimation( ) {
         final Handler handler = new Handler();
         int timing = button.getResources().getInteger(R.integer.loading_time_animation);
         handler.postDelayed(new Runnable() {
@@ -47,12 +41,22 @@ public class ButtonAnimationJLM {
                 button.doneLoagingAnimation(ContextCompat.getColor( button.getContext(), R.color.JLMgreen),BitmapFactory.decodeResource(button.getResources(),R.drawable.ic_done_white_48dp));
             }
         },timing);
-        timing =  button.getResources().getInteger(R.integer.loading_end_time_animation);
+    }
+
+    void OKButtonAndRevertAnimation() {
+        OKButtonAnimation( );
+        revert(R.integer.loading_end_time_animation);
+    }
+
+    void revert(int id)
+    {
+        final Handler handler = new Handler();
+        int timing =  button.getResources().getInteger(id);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 button.revertAnimation();
             }
-        },timing);
+        }, timing);
     }
 }

@@ -14,16 +14,13 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Fade;
 import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -137,13 +134,13 @@ public class Check extends AppCompatActivity {
 
     }
 
-    private void setupWindowAnimations() {
-        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+    private void setupWindowAnimations() { // TODO animations de transitions
+/*        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
         Fade fade = new Fade();
-        fade.setDuration(getResources().getInteger(R.integer.transition_time_between_activites));
+        fade.setDuration(getResources().getInteger(R.integer.transition_time_between_activites_fade));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setEnterTransition(fade);
-        }
+        }*/
     }
 
     @Override
@@ -260,7 +257,7 @@ public class Check extends AppCompatActivity {
 
                 //animation tools 1/////////////////////////
                 final Handler handler = new Handler();
-                int timing = getResources().getInteger(R.integer.contracting_time_animation);
+                int timing = getResources().getInteger(R.integer.decontracting_time_animation);
                 //animation tools 1- end/////////////////////////
                 if (numFilled) {
                     if (!streetName.equals("")) {
@@ -275,8 +272,19 @@ public class Check extends AppCompatActivity {
                                 SaveAsyncTask saveDoor = new SaveAsyncTask();
                                 try {
                                     Pair<Boolean , String> result = saveDoor.execute(porte).get();
+                                    if(!result.first) {// connexion ratée
+                                        mAddDoorAnimation.WrongButtonAnimation();
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                String message = "Connexion à la base impossible";
+                                                showLongToast(message);
+                                            }
+                                        }, timing);
+                                        return;
+                                    }
                                     //animation tools 2/////////////////////////
-                                    mAddDoorAnimation.OKButtonAnimation();
+                                    mAddDoorAnimation.OKButtonAndRevertAnimation();
                                     final String finalStreet = street;
                                     handler.postDelayed(new Runnable() {
                                         @Override
@@ -390,10 +398,10 @@ public class Check extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 //animation tools 1/////////////////////////
                 final Handler handler = new Handler();
-                int timing = getResources().getInteger(R.integer.contracting_time_animation);
+                int timing = getResources().getInteger(R.integer.decontracting_time_animation);
                 //animation tools 1- end/////////////////////////
                 //animation tools 2/////////////////////////
-                mGPSmAddDoorAnimation.OKButtonAnimation();
+                mGPSmAddDoorAnimation.OKButtonAndRevertAnimation();
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
                 handler.postDelayed(new Runnable() {

@@ -41,16 +41,14 @@ public class DeleteAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // TODO gérer les erreurs serveur + gérer les duplicata
-        if(result==null)return false;
-        else {
-            System.out.println(response);
-            return result.second;
-        }
+        System.out.println(response);
+        assert result != null;
+        return result.second;
+
 
     }
 
-    Pair<String, Boolean> delete(String url) throws IOException {
+    private Pair<String, Boolean> delete(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .delete()
@@ -59,7 +57,7 @@ public class DeleteAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
             return Pair.create(response.body().string(),response.isSuccessful());
         }
         catch (Exception e) {
-            return null;
+            return Pair.create("",false);
         }
     }
 

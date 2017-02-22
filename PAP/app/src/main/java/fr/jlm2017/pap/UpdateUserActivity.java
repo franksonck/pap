@@ -1,6 +1,7 @@
 package fr.jlm2017.pap;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Layout;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 import fr.jlm2017.pap.MongoDB.UpdateAsyncTask;
 
@@ -21,9 +23,11 @@ public class UpdateUserActivity extends AppCompatActivity {
 
     private EditText mPseudo, mEmail, mPassword;
     private CheckedTextView mAdmin;
-    private Button mSave, mCancel;
+    private Button mCancel;
+    private CircularProgressButton mSave;
+    private ButtonAnimationJLM mSaveAnimation;
     private Militant user;
-    private String passwordREGEX = "";
+    private String passwordREGEX = ""; //TODO password regex
     private int passwdLong = 6; // taille minimum d'un password
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +38,8 @@ public class UpdateUserActivity extends AppCompatActivity {
         mEmail = (EditText) findViewById(R.id.emailUpdate);
         mPassword = (EditText) findViewById(R.id.passwordUpdate);
         mAdmin = (CheckedTextView) findViewById(R.id.isAdminUpdate);
-        mSave = (Button) findViewById(R.id.SaveUpdate);
+        mSave = (CircularProgressButton) findViewById(R.id.SaveUpdate);
+        mSaveAnimation = new ButtonAnimationJLM(mSave);
         mCancel = (Button) findViewById(R.id.cancelUpdate);
         Intent origin = getIntent();
         user = origin.getParcelableExtra("USER_EXTRA");
@@ -46,23 +51,71 @@ public class UpdateUserActivity extends AppCompatActivity {
         mSave.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                if(!verifyPseudo()) { mPseudo.setError(getString(R.string.error_field_required));
-                    mPseudo.requestFocus(); return; }
-                if(!verifyEmail()) { mEmail.setError("Email invalide ou déjà pris");
-                    mEmail.requestFocus(); return; }
-                if (!verifyPassword()){ mPassword.setError("Minimum "+passwdLong+" caractères");
-                    mPassword.requestFocus(); return; }
+                mSave.startAnimation();
+                //animation tools 1/////////////////////////
+                final Handler handler = new Handler();
+                int timing = getResources().getInteger(R.integer.decontracting_time_animation);
+                //animation tools 1- end/////////////////////////
+
+                if(!verifyPseudo()) {
+                    //animation tools 2/////////////////////////
+                    mSaveAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPseudo.setError(getString(R.string.error_field_required));
+                            mPseudo.requestFocus();
+                        }
+                    }, timing);
+                    return;
+                    //animation tools 2-end/////////////////////////
+                    }
+                if(!verifyEmail()) {
+                    mSaveAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEmail.setError("Email invalide ou déjà pris");
+                            mEmail.requestFocus();
+                        }
+                    }, timing);
+                    return;
+                    }
+                if (!verifyPassword()){
+                    mSaveAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPassword.setError("Minimum "+passwdLong+" caractères");
+                            mPassword.requestFocus();
+                        }
+                    }, timing);
+                    return;
+                }
                 UpdateAsyncTask tsk = new UpdateAsyncTask();
                 try {
                     boolean finished = tsk.execute(user).get();
                     if(finished ) {
-                        Intent result = new Intent();
-                        result.putExtra("USER_EXTRA", user);
-                        setResult(RESULT_OK, result);
-                        finish();
+                        mSaveAnimation.OKButtonAndRevertAnimation();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent result = new Intent();
+                                result.putExtra("USER_EXTRA", user);
+                                setResult(RESULT_OK, result);
+                                finish();
+                            }
+                        }, timing);
                     }
                     else {
-                        Toast.makeText(getBaseContext(),"Erreur de mise à jour, problème de connexion ?",Toast.LENGTH_SHORT).show();
+                        mSaveAnimation.WrongButtonAnimation();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getBaseContext(),"Erreur de mise à jour, problème de connexion ?",Toast.LENGTH_SHORT).show();
+                            }
+                        }, timing);
+
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -78,8 +131,11 @@ public class UpdateUserActivity extends AppCompatActivity {
                 finish();
             }
         });
+        if (origin.getBooleanExtra("USER_FIRST",false)) { //en cas de premiere connection on interdit le cancel
+            mCancel.setEnabled(false);
+            mCancel.setVisibility(View.INVISIBLE);
+        }
 
-        mCancel.setEnabled(!origin.getBooleanExtra("USER_FIRST",false));
 
     }
 
@@ -118,7 +174,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         String password = mPassword.getText().toString();
         if(!password.equals("")) {
             if(password.length() >= passwdLong) {
-                user.password = LoginActivity.encode(password);
+                user.password =  Encoder.encode(password);
                 return true;
             }
             else {

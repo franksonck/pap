@@ -43,11 +43,11 @@ public class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<Data
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // TODO gérer les erreurs serveur + gérer les duplicata
-        System.out.println(response);
+//        System.out.println(response);
+        assert result != null;
         if(result.second){
             String updatedJson = "{\"data\" : " + response + "}";
-            if(contact == "militants") {
+            if(contact.equals("militants")) {
                 DataWrapperMilitant dataWrapper = DataWrapperMilitant.fromJson(updatedJson);
                 for (DataWrapperMilitant.BigDataMilitant big : dataWrapper.data) {
                     big.militant.id_=big._id.$oid;
@@ -68,7 +68,7 @@ public class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<Data
 
     }
 
-    Pair<String, Boolean> getFromDB(String url) throws IOException {
+    private Pair<String, Boolean> getFromDB(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -76,7 +76,7 @@ public class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<Data
             return Pair.create(response.body().string(),response.isSuccessful());
         }
         catch (Exception e) {
-            return null;
+            return Pair.create("",false);
         }
     }
 

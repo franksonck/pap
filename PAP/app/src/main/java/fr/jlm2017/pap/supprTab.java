@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.MongoDB.DataObject;
 import fr.jlm2017.pap.MongoDB.DeleteAsyncTask;
 import fr.jlm2017.pap.MongoDB.GetAllAsyncTask;
@@ -37,25 +39,42 @@ public class supprTab extends Fragment{
 
     ArrayList<Militant> listItems = new ArrayList<>();
     ArrayList<String> listItemsString = new ArrayList<>();
+    CircularProgressButton refreshButton;
+    ButtonAnimationJLM refreshButtonAnimation;
     private Militant user;
     ArrayAdapter<String> adapter;
     public int nbusers;
     ListView layout;
     TextView nbView;
+    boolean clicked;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         user = ((AdminActivity) getActivity()).user;
+        clicked =false;
         nbusers=0;
         View rootView = inflater.inflate(R.layout.tab_admin_2, container, false);
         layout = (ListView) rootView.findViewById(R.id.militantsList);
         nbView = (TextView) rootView.findViewById(R.id.nbUsers);
-        adapter = new ArrayAdapter<String>(this.getContext(),android.R.layout.simple_selectable_list_item,listItemsString);
+        adapter = new ArrayAdapter<>(this.getContext(),android.R.layout.simple_selectable_list_item,listItemsString);
         layout.setAdapter(adapter);
-        refreshList();
+        refreshButton = (CircularProgressButton) rootView.findViewById(R.id.refreshButton);
+        refreshButtonAnimation = new ButtonAnimationJLM(refreshButton);
 
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                clicked=true;
+                refreshButton.startAnimation();
+                refreshList();
+
+                showLongToast("Liste à jour");
+                clicked =false;
+            }
+        });
+
+        refreshList();
         layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> list, View v, final int pos, long id) {
                 // pop up de confirmation
@@ -74,6 +93,10 @@ public class supprTab extends Fragment{
                                 Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
                                 deleteMilitant(pos);
                             }
+                            else {
+                                String text = "Connexion à la base impossible";
+                                showLongToast(text);
+                            }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         } catch (ExecutionException e) {
@@ -90,17 +113,10 @@ public class supprTab extends Fragment{
             }
         });
 
-        Button refreshButton = (Button) rootView.findViewById(R.id.refreshButton);
-
-        refreshButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                refreshList();
-                showLongToast("Liste à jour");
-            }
-        });
 
         return rootView;
     }
+
 
     // fonction pour rafraichir la liste (appelée à la création et si on appuie sur "Refresh")
     public void refreshList() {
@@ -108,23 +124,32 @@ public class supprTab extends Fragment{
         listItemsString.clear();
         nbusers = 0;
         adapter.notifyDataSetInvalidated();
+
         GetAllAsyncTask tsk = new GetAllAsyncTask();
         Pair<ArrayList<DataObject>, Boolean> result = null;
         try {
             result = tsk.execute("militants").get();
+            if(!result.second) {// connexion ratée
+                if(clicked)refreshButtonAnimation.WrongButtonAnimation();
+                String message = "Connexion à la base impossible";
+                showLongToast(message);
+                return;
+            }
+            //animation tools 2/////////////////////////
+            if(clicked)refreshButtonAnimation.OKButtonAndRevertAnimation();
+            //animation tools 2-end/////////////////////////
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        System.out.println(result.toString());
 
+        assert result != null;
         for(DataObject x: result.first){
 
             Militant m = (Militant) x;
             addMilitant(m);
         }
-
 
     }
 
@@ -161,7 +186,7 @@ public class supprTab extends Fragment{
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if ("DATA_ACTION".equals(intent.getAction()) == true)
+            if ("DATA_ACTION".equals(intent.getAction()))
             {
                 Militant mili  = intent.getParcelableExtra("DATA_EXTRA");
                 System.out.println("ID caché : "+mili.id_);

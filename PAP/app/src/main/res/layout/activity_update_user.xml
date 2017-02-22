@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_update_user"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,7 +14,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
 
         <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
         <LinearLayout
@@ -86,7 +89,15 @@
             android:layout_width="100dp"
             android:checked="false" />
 
-        <Button
+        <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+            android:background="@drawable/button_shape_default_rounded"
+            app:spinning_bar_color="@android:color/black"
+            app:spinning_bar_width="4dp"
+            app:initialCornerAngle="50dp"
+            app:finalCornerAngle="50dp"
+            android:textColor="@color/tw__composer_white"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
             android:text="Sauver"
             android:layout_width="match_parent"
             android:layout_height="65dp"
@@ -95,6 +106,9 @@
             android:layout_marginBottom="20dp"/>
 
         <Button
+            android:background="@drawable/button_cancel_shape_default_rounded"
+            android:textColor="@color/tw__composer_white"
+            android:textStyle="bold"
             android:text="Annuler"
             android:layout_width="match_parent"
             android:layout_height="65dp"

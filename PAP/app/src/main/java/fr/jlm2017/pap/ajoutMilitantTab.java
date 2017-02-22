@@ -2,6 +2,7 @@ package fr.jlm2017.pap;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
+import fr.jlm2017.pap.MongoDB.DataObject;
 import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 
@@ -26,7 +29,8 @@ import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 
 public class ajoutMilitantTab extends Fragment {
 
-    Button mAddMilit;
+    CircularProgressButton mAddMilit;
+    ButtonAnimationJLM mAddMilitAnimation;
     EditText mEmail;
     CheckBox mIsAdmin;
 
@@ -35,7 +39,8 @@ public class ajoutMilitantTab extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_admin_1, container, false);
 
-        mAddMilit = (Button) rootView.findViewById(R.id.addUser);
+        mAddMilit = (CircularProgressButton) rootView.findViewById(R.id.addUser);
+        mAddMilitAnimation = new ButtonAnimationJLM(mAddMilit);
         mEmail = (EditText) rootView.findViewById(R.id.emailNewMilitant);
         mIsAdmin = (CheckBox) rootView.findViewById(R.id.isAdmin);
 
@@ -43,20 +48,45 @@ public class ajoutMilitantTab extends Fragment {
         mAddMilit.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                String email = mEmail.getText().toString();
-                boolean cancel = false;
-                View focusView = null;
+                mAddMilit.startAnimation();
+                //animation tools 1/////////////////////////
+                final Handler handler = new Handler();
+                int timing = getResources().getInteger(R.integer.decontracting_time_animation);
+                //animation tools 1- end/////////////////////////
 
-                if(!verifyEmail()) { mEmail.setError("Email invalide ou déjà pris");
-                    mEmail.requestFocus(); return; 
+                String email = mEmail.getText().toString();
+
+                if(!verifyEmail()) {
+                    //animation tools 2/////////////////////////
+                    mAddMilitAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEmail.setError("Email invalide ou déjà pris");
+                            mEmail.requestFocus();
+                        }
+                    }, timing);
+                    return;
+                    //animation tools 2-end/////////////////////////
                 }
                 
-                String basePWD = getResources().getString(R.string.basePWD);
+                String basePWD = Encoder.encode(getResources().getString(R.string.basePWD));
                 Militant mil = new Militant("", email, basePWD, mIsAdmin.isChecked());
                 SaveAsyncTask saveMil = new SaveAsyncTask();
                 Pair<Boolean, String> result;
                 try {
                     result = saveMil.execute(mil).get();
+                    if(!result.first) {// connexion ratée
+                        mAddMilitAnimation.WrongButtonAnimation();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                String message = "Connexion à la base impossible";
+                                showLongToast(message);
+                            }
+                        }, timing);
+                        return;
+                    }
                     mil.id_=result.second;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -65,14 +95,21 @@ public class ajoutMilitantTab extends Fragment {
                 }
 
                 //on actualise l'affichage dans le Fragement de suppression
-
                 final Intent intent = new Intent("DATA_ACTION");
                 intent.putExtra("DATA_EXTRA", mil);
                 LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 
-                String message = "Vous avez bien ajouté un militant";
-                showLongToast(message);
-                resetUI();
+                //animation tools 2/////////////////////////
+                mAddMilitAnimation.OKButtonAndRevertAnimation();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        String message = "Vous avez bien ajouté un militant";
+                        showLongToast(message);
+                        resetUI();
+                    }
+                }, timing);
+                //animation tools 2-end/////////////////////////
                 
             }
         });
@@ -88,7 +125,8 @@ public class ajoutMilitantTab extends Fragment {
             ArrayList<Pair<String,String>> ids = new ArrayList<>();
             ids.add(Pair.create("email",email));
             try {
-                if(!(tsk.execute(Pair.create("militants",ids)).get()).first.isEmpty()) return false; //on interdit de prendre le meme mail qu'un autre militant
+                Pair<ArrayList<DataObject>,Boolean> result = (tsk.execute(Pair.create("militants",ids))).get();
+                if(!result.first.isEmpty()) return false; //on interdit de prendre le meme mail qu'un autre militant
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

@@ -18,7 +18,7 @@ import okhttp3.Response;
 
 public class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
 
-    public static final MediaType JSON
+    private static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
 
     public OkHttpClient client;
@@ -42,16 +42,14 @@ public class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // TODO gérer les erreurs serveur + gérer les duplicata
-        if(result==null)return false;
-        else {
-            System.out.println(response);
-            return result.second;
-        }
+
+        System.out.println(response);
+        assert result != null;
+        return result.second;
 
     }
 
-    Pair<String, Boolean> put(String url, String json) throws IOException {
+    private Pair<String, Boolean> put(String url, String json) throws IOException {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -61,7 +59,7 @@ public class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
             return Pair.create(response.body().string(),response.isSuccessful());
         }
         catch (Exception e) {
-            return null;
+            return Pair.create("",false);
         }
     }
 
