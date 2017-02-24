@@ -26,6 +26,7 @@
             android:id="@+id/emailLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="50dp"
             >
 
             <EditText
@@ -45,8 +46,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/isAdmin"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="60dp" />
+            android:layout_marginRight="60dp"
+            android:layout_marginBottom="70dp"/>
 
         <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
             android:background="@drawable/button_shape_default_rounded"
@@ -60,8 +61,7 @@
             android:id="@+id/addUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="30dp"
-            android:layout_marginTop="40dp"/>
+            android:padding="30dp"/>
     </LinearLayout>
 
 </RelativeLayout>
