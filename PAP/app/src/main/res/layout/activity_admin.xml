@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="fr.jlm2017.pap.AdminActivity">
+    tools:context="fr.jlm2017.pap.Activities.AdminActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
