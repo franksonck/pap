@@ -9,16 +9,9 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="fr.jlm2017.pap.LoginActivity">
+    tools:context="fr.jlm2017.pap.Activities.LoginActivity">
 
     <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
 
     <ScrollView
         android:id="@+id/login_form"
@@ -28,21 +21,28 @@
         <LinearLayout
             android:id="@+id/email_login_form"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="206dp"
-                app:srcCompat="@drawable/logo_orange_bleu"
+                android:layout_width="300dp"
+                app:srcCompat="@mipmap/logo_orange_bleu"
                 android:id="@+id/imageView2"
                 android:layout_gravity="center_horizontal"
                 android:layout_height="168dp" />
-
+            <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:id="@+id/dummy_login"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:layout_width="0px"
+                android:layout_height="0px"/>
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
-
+                android:layout_weight="1"
+                android:layout_marginTop="20dp">
                 <AutoCompleteTextView
                     android:id="@+id/email"
                     android:layout_width="match_parent"
@@ -50,14 +50,17 @@
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:imeOptions="actionNext"
+                    android:nextFocusUp="@id/email"
+                    android:nextFocusLeft="@id/email"/>
 
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:layout_marginTop="20dp">
 
                 <EditText
                     android:id="@+id/password"
@@ -68,20 +71,24 @@
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    android:maxLines="1"/>
 
             </android.support.design.widget.TextInputLayout>
-
-            <Button
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:background="@drawable/button_shape_default_rounded"
+                app:spinning_bar_color="@android:color/black"
+                app:spinning_bar_width="4dp"
+                app:initialCornerAngle="50dp"
+                app:finalCornerAngle="50dp"
                 android:id="@+id/email_sign_in_button"
-                style="?android:textAppearanceSmall"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
+                android:textColor="@color/tw__composer_white"
                 android:textStyle="bold"
-                android:layout_weight="1" />
+
+                android:layout_gravity="center_horizontal"
+                android:text="@string/action_sign_in"
+                android:layout_width="match_parent"
+                android:layout_height="74dp"
+                android:layout_marginTop="30dp"/>
 
         </LinearLayout>
 
