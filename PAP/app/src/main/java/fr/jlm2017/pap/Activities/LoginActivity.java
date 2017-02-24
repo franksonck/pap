@@ -193,7 +193,10 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponseReceived(Pair<ArrayList<DataObject>, Boolean> result) {
                         if (result.second) {// on a bien récupéré les données
-                            if (result.first.isEmpty()) caseEmpty();
+                            if (result.first.isEmpty()){
+                                caseEmpty();
+                                return;
+                            }
                             Militant mili = (Militant) result.first.get(0);
                             String hidden = Encoder.encode(password);
                             System.out.println(" pwd : " + hidden + "\n stored : " + mili.password);
