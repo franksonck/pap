@@ -1,4 +1,4 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.utils;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
@@ -12,28 +12,24 @@ import javax.crypto.spec.PBEKeySpec;
  * Created by thoma on 22/02/2017.
  */
 
-class Encoder {
+public class Encoder {
 
-    static String encode(String password) {
+    public static String encode(String password) {
         String res ="";
         try {
             res = generateStorngPasswordHash(password);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
         return res;
     }
 
-    static boolean decode(String password, String storedPassword)
+    public static boolean decode(String password, String storedPassword)
     {
         boolean res =false;
         try {
             res =  validatePassword(password,storedPassword);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
         return res;

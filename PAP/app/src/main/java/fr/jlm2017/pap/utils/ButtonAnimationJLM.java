@@ -1,26 +1,30 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.utils;
 
-import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
-import android.util.AttributeSet;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
+import fr.jlm2017.pap.R;
 
 /**
  * Created by thoma on 20/02/2017.
  */
 
-class ButtonAnimationJLM {
+public class ButtonAnimationJLM {
 
-    CircularProgressButton button;
+    public CircularProgressButton button;
+    private String Originaltext;
 
-    ButtonAnimationJLM(CircularProgressButton button) {
+    public ButtonAnimationJLM(CircularProgressButton button) {
         this.button = button;
     }
 
-    void WrongButtonAnimation() {
+    public void startAnimation(){
+        Originaltext=button.getText().toString();
+        button.startAnimation();
+    }
+    public void WrongButtonAnimation() {
         final Handler handler = new Handler();
         int timing = button.getResources().getInteger(R.integer.loading_time_animation);
         handler.postDelayed(new Runnable() {
@@ -32,7 +36,7 @@ class ButtonAnimationJLM {
         revert(R.integer.loading_end_time_animation);
     }
 
-    void OKButtonAnimation( ) {
+    public void OKButtonAnimation() {
         final Handler handler = new Handler();
         int timing = button.getResources().getInteger(R.integer.loading_time_animation);
         handler.postDelayed(new Runnable() {
@@ -43,12 +47,12 @@ class ButtonAnimationJLM {
         },timing);
     }
 
-    void OKButtonAndRevertAnimation() {
+    public void OKButtonAndRevertAnimation() {
         OKButtonAnimation( );
         revert(R.integer.loading_end_time_animation);
     }
 
-    void revert(int id)
+    public void revert(int id)
     {
         final Handler handler = new Handler();
         int timing =  button.getResources().getInteger(id);
@@ -58,5 +62,13 @@ class ButtonAnimationJLM {
                 button.revertAnimation();
             }
         }, timing);
+        timing =button.getResources().getInteger(R.integer.decontracting_time_animation);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                button.setText(Originaltext);
+            }
+        }, timing);
+
     }
 }

@@ -4,9 +4,6 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-import fr.jlm2017.pap.Militant;
-import fr.jlm2017.pap.Porte;
-
 /**
  * Created by thoma on 16/02/2017.
  */
@@ -14,7 +11,7 @@ import fr.jlm2017.pap.Porte;
 public class DataWrapperPortes {
         public List<BigDataPorte> data;
 
-        public static DataWrapperPortes fromJson(String s) {
+        static DataWrapperPortes fromJson(String s) {
             return new Gson().fromJson(s, DataWrapperPortes.class);
         }
 
@@ -28,7 +25,7 @@ public class DataWrapperPortes {
             return new Gson().toJson(this);
         }
 
-    public class BigDataPorte {
+    class BigDataPorte {
         public Identifier _id ;
         public Porte porte;
 

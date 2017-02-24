@@ -1,16 +1,14 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.Activities;
 
 /**
  * Created by thoma on 15/02/2017.
  */
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -21,8 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,9 +27,12 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
+import fr.jlm2017.pap.utils.ButtonAnimationJLM;
+import fr.jlm2017.pap.MongoDB.Militant;
 import fr.jlm2017.pap.MongoDB.DataObject;
 import fr.jlm2017.pap.MongoDB.DeleteAsyncTask;
 import fr.jlm2017.pap.MongoDB.GetAllAsyncTask;
+import fr.jlm2017.pap.R;
 
 public class supprTab extends Fragment{
 
@@ -66,11 +65,8 @@ public class supprTab extends Fragment{
         refreshButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 clicked=true;
-                refreshButton.startAnimation();
+                refreshButtonAnimation.startAnimation();
                 refreshList();
-
-                showLongToast("Liste à jour");
-                clicked =false;
             }
         });
 
@@ -86,22 +82,21 @@ public class supprTab extends Fragment{
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // User clicked OK button
-                        String message =("Vous avez supprimé :"+name);
-                        DeleteAsyncTask tsk = new DeleteAsyncTask();
-                        try {
-                            if(tsk.execute(listItems.get(pos)).get()){
-                                Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
-                                deleteMilitant(pos);
+                        final String message =("Vous avez supprimé :"+name);
+                        DeleteAsyncTask tsk = new DeleteAsyncTask() {
+                            @Override
+                            public void onResponseReceived(Boolean result) {
+                                if(result){
+                                    Toast.makeText(getContext(),message,Toast.LENGTH_SHORT).show();
+                                    deleteMilitant(pos);
+                                }
+                                else {
+                                    String text = "Connexion à la base impossible";
+                                    showLongToast(text);
+                                }
                             }
-                            else {
-                                String text = "Connexion à la base impossible";
-                                showLongToast(text);
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
+                        };
+                        tsk.execute(listItems.get(pos));
                     }
                 });
                 builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -125,31 +120,32 @@ public class supprTab extends Fragment{
         nbusers = 0;
         adapter.notifyDataSetInvalidated();
 
-        GetAllAsyncTask tsk = new GetAllAsyncTask();
-        Pair<ArrayList<DataObject>, Boolean> result = null;
-        try {
-            result = tsk.execute("militants").get();
-            if(!result.second) {// connexion ratée
-                if(clicked)refreshButtonAnimation.WrongButtonAnimation();
-                String message = "Connexion à la base impossible";
-                showLongToast(message);
-                return;
+        GetAllAsyncTask tsk = new GetAllAsyncTask() {
+            @Override
+            public void onResponseReceived(Pair<ArrayList<DataObject>, Boolean> result) {
+                if(!result.second) {// connexion ratée
+                    if(clicked)refreshButtonAnimation.WrongButtonAnimation();
+                    String message = "Connexion à la base impossible";
+                    showLongToast(message);
+                    clicked =false;
+                    return;
+                }
+                //animation tools 2/////////////////////////
+                if(clicked){
+                    refreshButtonAnimation.OKButtonAndRevertAnimation();
+                    showLongToast("Liste à jour");
+                }
+                clicked =false;
+                //animation tools 2-end/////////////////////////
+                for(DataObject x: result.first){
+
+                    Militant m = (Militant) x;
+                    addMilitant(m);
+                }
+                adapter.notifyDataSetChanged();
             }
-            //animation tools 2/////////////////////////
-            if(clicked)refreshButtonAnimation.OKButtonAndRevertAnimation();
-            //animation tools 2-end/////////////////////////
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        assert result != null;
-        for(DataObject x: result.first){
-
-            Militant m = (Militant) x;
-            addMilitant(m);
-        }
+        };
+        tsk.execute("militants");
 
     }
 
@@ -161,7 +157,6 @@ public class supprTab extends Fragment{
         if(m.id_.equals(user.id_)) return;  // on ne peut pas se voir soit meme dans la liste
         listItems.add(m);
         listItemsString.add(m.pseudo + " | " + m.email);
-        adapter.notifyDataSetChanged();
     }
 
     private void deleteMilitant(int pos) {
@@ -191,6 +186,7 @@ public class supprTab extends Fragment{
                 Militant mili  = intent.getParcelableExtra("DATA_EXTRA");
                 System.out.println("ID caché : "+mili.id_);
                 addMilitant(mili);
+                adapter.notifyDataSetChanged();
             }
         }
     };

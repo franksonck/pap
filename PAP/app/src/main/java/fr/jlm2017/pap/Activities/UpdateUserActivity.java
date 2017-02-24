@@ -1,10 +1,9 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.Activities;
 
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
@@ -16,12 +15,19 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
+import fr.jlm2017.pap.MongoDB.DataObject;
+import fr.jlm2017.pap.utils.ButtonAnimationJLM;
+import fr.jlm2017.pap.utils.Encoder;
+import fr.jlm2017.pap.MongoDB.Militant;
 import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 import fr.jlm2017.pap.MongoDB.UpdateAsyncTask;
+import fr.jlm2017.pap.R;
 
 public class UpdateUserActivity extends AppCompatActivity {
 
     private EditText mPseudo, mEmail, mPassword;
+    private Handler handler;
+    private int timing;
     private CheckedTextView mAdmin;
     private Button mCancel;
     private CircularProgressButton mSave;
@@ -33,7 +39,10 @@ public class UpdateUserActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_user);
-
+        //animation tools 1/////////////////////////
+         handler = new Handler();
+         timing = getResources().getInteger(R.integer.decontracting_time_animation);
+        //animation tools 1- end/////////////////////////
         mPseudo = (EditText) findViewById(R.id.PseudoUpdate);
         mEmail = (EditText) findViewById(R.id.emailUpdate);
         mPassword = (EditText) findViewById(R.id.passwordUpdate);
@@ -51,11 +60,7 @@ public class UpdateUserActivity extends AppCompatActivity {
         mSave.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                mSave.startAnimation();
-                //animation tools 1/////////////////////////
-                final Handler handler = new Handler();
-                int timing = getResources().getInteger(R.integer.decontracting_time_animation);
-                //animation tools 1- end/////////////////////////
+                mSaveAnimation.startAnimation();
 
                 if(!verifyPseudo()) {
                     //animation tools 2/////////////////////////
@@ -70,17 +75,6 @@ public class UpdateUserActivity extends AppCompatActivity {
                     return;
                     //animation tools 2-end/////////////////////////
                     }
-                if(!verifyEmail()) {
-                    mSaveAnimation.WrongButtonAnimation();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mEmail.setError("Email invalide ou déjà pris");
-                            mEmail.requestFocus();
-                        }
-                    }, timing);
-                    return;
-                    }
                 if (!verifyPassword()){
                     mSaveAnimation.WrongButtonAnimation();
                     handler.postDelayed(new Runnable() {
@@ -92,37 +86,49 @@ public class UpdateUserActivity extends AppCompatActivity {
                     }, timing);
                     return;
                 }
-                UpdateAsyncTask tsk = new UpdateAsyncTask();
-                try {
-                    boolean finished = tsk.execute(user).get();
-                    if(finished ) {
-                        mSaveAnimation.OKButtonAndRevertAnimation();
-                        handler.postDelayed(new Runnable() {
+
+                final String email = mEmail.getText().toString();
+                boolean res= false;
+                if(LoginActivity.isEmailValid(email)){
+                    if(!user.email.equals(email)) {
+                        GetAsyncTask tsk = new GetAsyncTask() {
                             @Override
-                            public void run() {
-                                Intent result = new Intent();
-                                result.putExtra("USER_EXTRA", user);
-                                setResult(RESULT_OK, result);
-                                finish();
+                            public void onResponseReceived(Pair<ArrayList<DataObject>, Boolean> result) {
+                                if(!result.first.isEmpty()) {//on interdit de prendre le meme mail qu'un autre militant
+                                    mSaveAnimation.WrongButtonAnimation();
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            mEmail.setError("Email déjà pris");
+                                            mEmail.requestFocus();
+                                        }
+                                    }, timing);
+                                }
+                                else {
+                                    user.email=email;
+                                    clickedNext();
+                                }
                             }
-                        }, timing);
+                        };
+                        ArrayList<Pair<String,String>> ids = new ArrayList<>();
+                        ids.add(Pair.create("email",email));
+                        tsk.execute(Pair.create("militants",ids));
                     }
                     else {
-                        mSaveAnimation.WrongButtonAnimation();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getBaseContext(),"Erreur de mise à jour, problème de connexion ?",Toast.LENGTH_SHORT).show();
-                            }
-                        }, timing);
-
+                        user.email=email;
+                        clickedNext();
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
                 }
-
+                else {
+                    mSaveAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mEmail.setError("Email invalide ");
+                            mEmail.requestFocus();
+                        }
+                    }, timing);
+                }
             }
         });
 
@@ -139,6 +145,36 @@ public class UpdateUserActivity extends AppCompatActivity {
 
     }
 
+    private void clickedNext() {
+        UpdateAsyncTask tsk = new UpdateAsyncTask() {
+            @Override
+            public void onResponseReceived(Boolean finished) {
+                if(finished ) {
+                    mSaveAnimation.OKButtonAndRevertAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Intent result = new Intent();
+                            result.putExtra("USER_EXTRA", user);
+                            setResult(RESULT_OK, result);
+                            finish();
+                        }
+                    }, timing);
+                }
+                else {
+                    mSaveAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getBaseContext(),"Erreur de mise à jour, problème de connexion ?",Toast.LENGTH_SHORT).show();
+                        }
+                    }, timing);
+                }
+            }
+        };
+        tsk.execute(user);
+    }
+
     private boolean verifyPseudo() {
         String pseudo = mPseudo.getText().toString();
         boolean res= false;
@@ -149,27 +185,6 @@ public class UpdateUserActivity extends AppCompatActivity {
         return res;
     }
 
-    private boolean verifyEmail() {
-        String email = mEmail.getText().toString();
-        boolean res= false;
-        if(LoginActivity.isEmailValid(email)){
-            if(!user.email.equals(email)) {
-                GetAsyncTask tsk = new GetAsyncTask();
-                ArrayList<Pair<String,String>> ids = new ArrayList<>();
-                ids.add(Pair.create("email",email));
-                try {
-                    if(!(tsk.execute(Pair.create("militants",ids)).get()).first.isEmpty()) return false; //on interdit de prendre le meme mail qu'un autre militant
-                    user.email=email;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-            }
-            res=true;
-        }
-        return res;
-    }
     private boolean verifyPassword() { // TODO vérification de password
         String password = mPassword.getText().toString();
         if(!password.equals("")) {

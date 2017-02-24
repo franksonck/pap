@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="fr.jlm2017.pap.AdminActivity">
+    tools:context="fr.jlm2017.pap.Activities.AdminActivity">
 
 
     <TextView
@@ -18,22 +18,29 @@
         android:layout_alignParentStart="true"
         android:id="@+id/nbUsersFix"
         android:textAppearance="@style/TextAppearance.AppCompat.Button" />
-
-    <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-        android:background="@drawable/button_shape_default_rounded"
-        app:spinning_bar_color="@android:color/black"
-        app:spinning_bar_width="4dp"
-        app:initialCornerAngle="50dp"
-        app:finalCornerAngle="50dp"
-        android:textColor="@color/tw__composer_white"
-        android:textStyle="bold"
-        android:text="Refresh"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/refreshButton"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:id="@+id/refreshButtonLayout"
+        android:gravity="center">
 
+        <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+            android:background="@drawable/button_shape_default_rounded"
+            app:spinning_bar_color="@android:color/black"
+            app:spinning_bar_width="4dp"
+            app:initialCornerAngle="50dp"
+            app:finalCornerAngle="50dp"
+            android:textColor="@color/tw__composer_white"
+            android:textStyle="bold"
+            android:text="Refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/refreshButton"
+             />
+
+    </LinearLayout>
     <TextView
         android:text="0"
         android:layout_width="wrap_content"
@@ -48,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/militantsList"
-        android:layout_below="@+id/refreshButton"
+        android:layout_below="@+id/refreshButtonLayout"
         android:layout_alignParentStart="true" />
 
 </RelativeLayout>

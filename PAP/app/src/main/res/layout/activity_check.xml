@@ -5,144 +5,39 @@
     android:id="@+id/activity_check"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.jlm2017.pap.Check">
+    tools:context="fr.jlm2017.pap.Activities.Check">
 
-    <FrameLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
+        android:gravity="center_vertical"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:gravity="center_vertical">
+            android:layout_weight="1">
+
+
+            <CheckBox
+                android:text="@string/activer_le_gps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/GPSActive" />
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_weight="2">
-
-                <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"
-                    android:layout_width="0px"
-                    android:layout_height="0px"/>
-                <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1">
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberSigned"
-                        android:ems="10"
-                        android:id="@+id/StreetNum"
-                        android:hint="Numéro dans la rue"
-                        android:layout_alignBottom="@+id/streeNumFix"
-                        android:layout_alignParentEnd="true"
-                        android:layout_weight="22"
-                        android:imeOptions="actionDone"
-                        android:nextFocusUp="@id/StreetNum"
-                        android:nextFocusLeft="@id/StreetNum"/>
-
-                </android.support.design.widget.TextInputLayout>
-
-                <RadioGroup
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:layout_marginRight="20dp">
-
-                    <CheckBox
-                        android:text="Bis"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/ButtonBis"
-                        android:layout_weight="1" />
-
-                    <CheckBox
-                        android:text="Ter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/ButtonTer"
-                        android:layout_weight="1" />
-                </RadioGroup>
-
-            </LinearLayout>
-
-            <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1.8"
-            android:gravity="center">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2">
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2">
-
-                        <android.support.design.widget.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-                            <EditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textPersonName"
-                                android:ems="10"
-                                android:id="@+id/Adress"
-                                android:hint="Nom de rue"
-                                android:imeOptions="actionDone"/>
-                        </android.support.design.widget.TextInputLayout>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:gravity="center">
-
-                        <android.support.design.widget.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1">
-                            <EditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textPersonName"
-                                android:ems="10"
-                                android:id="@+id/Ville"
-                                android:hint="Ville"
-                                android:layout_weight="1"
-                                android:imeOptions="actionDone"/>
-                        </android.support.design.widget.TextInputLayout>
-
-                    </LinearLayout>
-                </LinearLayout>
-
+                android:gravity="center">
                 <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                     android:background="@drawable/button_shape_default_rounded"
                     app:spinning_bar_color="@android:color/black"
@@ -152,56 +47,143 @@
                     android:textColor="@color/tw__composer_white"
                     android:textStyle="bold"
                     android:layout_gravity="center"
-                    android:text="GPS"
-                    android:layout_width="wrap_content"
-                    android:layout_height="88dp"
-                    android:id="@+id/GPSButton" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:gravity="center">
-
-                <CheckBox
-                    android:text="Appartement ?"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/CheckAppart"
-                    android:layout_weight="1.5"
-                    android:checked="false" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/DoorNumLayout"
+                    android:text="@string/gps_use"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="1">
-
-                    <EditText
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:ems="10"
-                        android:id="@+id/DoorNum"
-                        android:hint="Numéro d'appartement"
-                        android:layout_below="@+id/numDoorFix"
-                        android:layout_centerHorizontal="false"
-                        android:imeOptions="actionDone"/>
-                </android.support.design.widget.TextInputLayout>
-
+                    android:id="@+id/GPSButton"
+                    android:layout_marginLeft="30dp" />
             </LinearLayout>
+        </LinearLayout>
 
+        <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_width="0px"
+            android:layout_height="0dp" />
+
+        <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+            android:layout_weight="1">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword"
+            android:ems="10"
+            android:id="@+id/StreetNum"
+            android:hint="@string/num_ro_dans_la_rue"
+            android:layout_alignBottom="@+id/streeNumFix"
+            android:layout_alignParentEnd="true"
+            android:imeOptions="actionDone"
+            android:nextFocusUp="@id/StreetNum"
+            android:nextFocusLeft="@id/StreetNum"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences|textAutoCorrect"
+                android:ems="10"
+                android:id="@+id/complement"
+                android:hint="@string/compl_ment_d_adresse"
+                android:layout_alignBottom="@+id/streeNumFix"
+                android:layout_alignParentEnd="true"
+                android:imeOptions="actionDone"
+                android:nextFocusUp="@id/StreetNum"
+                android:nextFocusLeft="@id/StreetNum"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="textCapSentences|textAutoCorrect"
+                android:ems="10"
+                android:id="@+id/Adress"
+                android:hint="@string/nom_de_rue"
+                android:imeOptions="actionDone"/>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapSentences|textAutoCorrect"
+                android:ems="10"
+                android:id="@+id/Ville"
+                android:hint="@string/ville"
+                android:imeOptions="actionDone"/>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_weight="1">
+
+            <CheckBox
+                android:text="@string/appartement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/CheckAppart"
+                android:layout_weight="1.5"
+                android:checked="false" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/DoorNumLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword"
+                    android:ems="10"
+                    android:id="@+id/DoorNum"
+                    android:hint="Numéro d'appartement"
+                    android:layout_below="@+id/numDoorFix"
+                    android:layout_centerHorizontal="false"
+                    android:imeOptions="actionDone"/>
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.95">
 
             <RadioGroup
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:layout_weight="1">
 
                 <CheckBox
-                    android:text="Porte Ouverte ?"
+                    android:text="@string/porte_ouverte"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/CheckOpenDoor"
@@ -209,7 +191,7 @@
                     android:layout_alignParentStart="true" />
 
                 <CheckBox
-                    android:text="Utile de revenir ?"
+                    android:text="@string/utile_de_revenir"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/CheckComeBack"
@@ -219,35 +201,45 @@
 
             </RadioGroup>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="2"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                >
-
-                <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
-                    android:background="@drawable/button_shape_default_rounded"
-                    app:spinning_bar_color="@android:color/black"
-                    app:spinning_bar_width="4dp"
-                    app:initialCornerAngle="50dp"
-                    app:finalCornerAngle="50dp"
-                    android:textColor="@color/tw__composer_white"
-                    android:textStyle="bold"
-
-                    android:text="Envoyer"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/AddDoor"
-
-                     />
-            </LinearLayout>
-
+            <ImageButton
+                app:srcCompat="@android:drawable/ic_menu_manage"
+                android:id="@+id/menuButtonImage"
+                android:background="@drawable/button_menu_shape_default_rounded"
+                android:contentDescription="@string/menu_utilisateur"
+                android:padding="20dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_vertical" />
 
         </LinearLayout>
-    </FrameLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:layout_weight="0.95">
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:background="@drawable/button_shape_default_rounded"
+                app:spinning_bar_color="@android:color/black"
+                app:spinning_bar_width="4dp"
+                app:initialCornerAngle="50dp"
+                app:finalCornerAngle="50dp"
+                android:textColor="@color/tw__composer_white"
+                android:textStyle="bold"
+
+                android:text="@string/envoyer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/AddDoor"
+
+                 />
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
 </RelativeLayout>

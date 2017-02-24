@@ -1,9 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="fr.jlm2017.pap.AdminActivity">
-    <item android:id="@+id/adminLog" android:title="Admin"></item>
-    <item android:id="@+id/updateUser" android:title="Modifier mes données personnelles"></item>
-    <item android:id="@+id/logout" android:title="Déconnexion"></item>
+    tools:context="fr.jlm2017.pap.Activities.AdminActivity">
+    <item android:id="@+id/adminLog" android:title="@string/admin_menu"/>
+    <item android:id="@+id/updateUser" android:title="@string/modifier_mes_donn_es_personnelles" />
+    <item android:id="@+id/logout" android:title="@string/d_connexion"/>
 
 </menu>

@@ -9,7 +9,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="fr.jlm2017.pap.UpdateUserActivity">
+    tools:context="fr.jlm2017.pap.Activities.UpdateUserActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,7 +37,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
                 android:id="@+id/PseudoUpdate"
-                android:hint="Pseudo"
+                android:hint="@string/pseudo"
                 android:layout_weight="1"
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="20dp"
@@ -73,14 +73,14 @@
                 android:inputType="textPassword"
                 android:ems="10"
                 android:id="@+id/passwordUpdate"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="40dp"
                 android:imeOptions="actionDone"/>
         </android.support.design.widget.TextInputLayout>
 
         <CheckedTextView
-            android:text="Admin ?"
+            android:text="@string/admin"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:id="@+id/isAdminUpdate"
@@ -98,7 +98,7 @@
             android:textColor="@color/tw__composer_white"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
-            android:text="Sauver"
+            android:text="@string/sauver"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:id="@+id/SaveUpdate"
@@ -109,7 +109,7 @@
             android:background="@drawable/button_cancel_shape_default_rounded"
             android:textColor="@color/tw__composer_white"
             android:textStyle="bold"
-            android:text="Annuler"
+            android:text="@string/annuler"
             android:layout_width="match_parent"
             android:layout_height="65dp"
             android:id="@+id/cancelUpdate" />

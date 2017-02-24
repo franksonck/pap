@@ -1,4 +1,4 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.Activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,8 +28,12 @@ import android.util.Pair;
 import android.widget.Toast;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
+import fr.jlm2017.pap.utils.ButtonAnimationJLM;
+import fr.jlm2017.pap.utils.Encoder;
+import fr.jlm2017.pap.MongoDB.Militant;
 import fr.jlm2017.pap.MongoDB.DataObject;
 import fr.jlm2017.pap.MongoDB.GetAsyncTask;
+import fr.jlm2017.pap.R;
 
 
 /**
@@ -38,6 +42,10 @@ import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 public class LoginActivity extends AppCompatActivity {
 
     public static boolean installed = false;
+    //animation tools 1/////////////////////////
+    private Handler handler ;
+    private int timing ;
+    //animation tools 1- end/////////////////////////
     private static String SavedEmailsPreference = "SavedEmails_";
 
     public static boolean isEmailValid(String email) {
@@ -69,6 +77,9 @@ public class LoginActivity extends AppCompatActivity {
         setupWindowAnimations();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        handler = new Handler();
+        timing = getResources().getInteger(R.integer.decontracting_time_animation);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -86,8 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void run() {
                             mEmailSignInButtonAnimated.button.callOnClick();
                         }
-                    }, 10);
-
+                    }, 100);
                     return true;
                 }
                 return false;
@@ -98,7 +108,6 @@ public class LoginActivity extends AppCompatActivity {
         mEmailSignInButtonAnimated.button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                mEmailSignInButtonAnimated.button.startAnimation();
                 attemptLogin();
             }
         });
@@ -147,15 +156,12 @@ public class LoginActivity extends AppCompatActivity {
         // Reset errors.
         mEmailView.setError(null);
         mPasswordView.setError(null);
-
+        mEmailSignInButtonAnimated.startAnimation();
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String email = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
-        //animation tools 1/////////////////////////
-        final Handler handler = new Handler();
-        int timing = getResources().getInteger(R.integer.decontracting_time_animation);
-        //animation tools 1- end/////////////////////////
+
         // Check for a valid email address.
         if (!isEmailValid(email)) {
             //animation tools 2/////////////////////////
@@ -168,100 +174,86 @@ public class LoginActivity extends AppCompatActivity {
             }
             }, timing);
             //animation tools 2-end/////////////////////////
-            return;
-
-        } else if (TextUtils.isEmpty(password)) {
-            //animation tools 2/////////////////////////
-            mEmailSignInButtonAnimated.WrongButtonAnimation();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mPasswordView.setError(getString(R.string.error_field_required));
-                    mPasswordView.requestFocus();
-                }
-            }, timing);
-            //animation tools 2-end/////////////////////////
-            return;
-
-        } else  {
-            int correct  = isEmailAndPasswordOK(email,password); // vérification avec la BDD
-            switch(correct) {
-                case -1 :
-                    //animation tools 2/////////////////////////
-                    mEmailSignInButtonAnimated.WrongButtonAnimation();
-                    handler.postDelayed(new Runnable() {
+        } else {
+            if (TextUtils.isEmpty(password)) {
+                //animation tools 2/////////////////////////
+                mEmailSignInButtonAnimated.WrongButtonAnimation();
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        mEmailView.setError(getString(R.string.error_unknown_email));
-                        mEmailView.requestFocus();
+                        mPasswordView.setError(getString(R.string.error_field_required));
+                        mPasswordView.requestFocus();
                     }
-                    }, timing);
-                    //animation tools 2-end/////////////////////////
-                    return;
-                case -2 :
-                    mEmailSignInButtonAnimated.WrongButtonAnimation();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mPasswordView.setError(getString(R.string.error_incorrect_password));
-                            mPasswordView.requestFocus();
-                        }
-                    }, timing);
-                    return;
+                }, timing);
+                //animation tools 2-end/////////////////////////
+            } else {
+                ArrayList<Pair<String, String>> indexValuesCouples = new ArrayList<>();
+                indexValuesCouples.add(Pair.create("email", email));
+                GetAsyncTask tsk = new GetAsyncTask() {
+                    @Override
+                    public void onResponseReceived(Pair<ArrayList<DataObject>, Boolean> result) {
+                        if (result.second) {// on a bien récupéré les données
+                            if (result.first.isEmpty()) caseEmpty();
+                            Militant mili = (Militant) result.first.get(0);
+                            String hidden = Encoder.encode(password);
+                            System.out.println(" pwd : " + hidden + "\n stored : " + mili.password);
 
-                case 0 :
-                    addMailSharedPreference(this,email); // l'email est ok, on essaie de l'ajouter
-                    mEmailSignInButtonAnimated.OKButtonAnimation();
-                    timing = getResources().getInteger(R.integer.loading_end_time_animation);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            final Intent logged = new Intent(LoginActivity.this,Check.class); // login OK on passe à CHeck
-                            logged.putExtra("USER_EXTRA", regMilitant); // on envoie a Check les données utilisateur
-                            LoginActivity.this.startActivityForResult(logged,USER_LOG_OUT);
+                            if (Encoder.decode(password, mili.password)) {
+                                regMilitant = mili;
+                                caseOK(email);
+                            } else {
+                                casePWDfalse();
+                            }
+                        } else {
+                            mEmailSignInButtonAnimated.WrongButtonAnimation();
+                            Toast.makeText(getApplicationContext(), "connexion à la BDD impossible, êtes vous bien connecté à internet ?", Toast.LENGTH_LONG).show();
                         }
-                    }, timing);
-                    return;
+                    }
+                };
+                tsk.execute(Pair.create("militants",indexValuesCouples));
 
-                default : return;
             }
-
         }
     }
 
-
-    private int isEmailAndPasswordOK(String email, String password) {
-        GetAsyncTask tsk = new GetAsyncTask();
-        try {
-            ArrayList<Pair<String,String>> indexValuesCouples = new ArrayList<>();
-            indexValuesCouples.add(Pair.create("email",email));
-            Pair<ArrayList<DataObject>, Boolean> result = tsk.execute(Pair.create("militants",indexValuesCouples)).get();
-            if(result.second) {// on a bien récupéré les données
-                if(result.first.isEmpty()) return -1;
-                Militant mili = (Militant) result.first.get(0);
-                String hidden = Encoder.encode(password);
-                System.out.println(" pwd : "+ hidden + "\n stored : "+mili.password);
-
-                if(Encoder.decode(password,mili.password)){
-                    regMilitant=mili;
-                    return 0; // tout ok
-                }
-                else {
-                    return -2; // pwd faux
-                }
+    private void caseOK(String email) {
+        addMailSharedPreference(this,email); // l'email est ok, on essaie de l'ajouter
+        mEmailSignInButtonAnimated.OKButtonAnimation();
+        timing = getResources().getInteger(R.integer.loading_end_time_animation);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                final Intent logged = new Intent(LoginActivity.this,Check.class); // login OK on passe à CHeck
+                logged.putExtra("USER_EXTRA", regMilitant); // on envoie a Check les données utilisateur
+                LoginActivity.this.startActivityForResult(logged,USER_LOG_OUT);
             }
-            else {
-                mEmailSignInButtonAnimated.WrongButtonAnimation();
-                Toast.makeText(this,"connexion à la BDD impossible, êtes vous bien connecté à internet ?",Toast.LENGTH_LONG);
-            }
-
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return -3;
+        }, timing);
     }
+
+    private void casePWDfalse() {
+        mEmailSignInButtonAnimated.WrongButtonAnimation();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.requestFocus();
+            }
+        }, timing);
+    }
+
+    private void caseEmpty() {
+        //animation tools 2/////////////////////////
+        mEmailSignInButtonAnimated.WrongButtonAnimation();
+        handler.postDelayed(new Runnable() {
+        @Override
+        public void run() {
+            mEmailView.setError(getString(R.string.error_unknown_email));
+            mEmailView.requestFocus();
+        }
+        }, timing);
+        //animation tools 2-end/////////////////////////
+    }
+
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);

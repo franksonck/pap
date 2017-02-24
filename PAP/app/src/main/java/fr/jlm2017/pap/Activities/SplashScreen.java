@@ -1,8 +1,10 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.Activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import fr.jlm2017.pap.R;
 
 public class SplashScreen extends AppCompatActivity {
     public int SPLASH_SCREEN_TIME=3000;

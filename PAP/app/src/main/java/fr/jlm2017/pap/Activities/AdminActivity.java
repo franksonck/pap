@@ -1,8 +1,6 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.Activities;
 
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -11,12 +9,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
-import android.widget.TextView;
-import android.widget.Toast;
+import fr.jlm2017.pap.MongoDB.Militant;
+import fr.jlm2017.pap.R;
 
 public class AdminActivity extends AppCompatActivity {
 
@@ -64,17 +59,17 @@ public class AdminActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case 0 : ajoutMilitantTab tab1 = new ajoutMilitantTab();
-                    return tab1;
-                case 1 : supprTab tab2 = new supprTab();
-                    return tab2;
+                case 0 :
+                    return new ajoutMilitantTab();
+                case 1 :
+                    return new supprTab();
                 default : return null;
             }
         }

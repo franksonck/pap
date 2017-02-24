@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="integer" name="customImeActionId" format="integer">100</item>
-    <item type="integer" name="transition_time_between_activites" format="integer">2000</item>
+    <item type="integer" name="transition_time_between_activites" format="integer">2100</item>
     <item type="integer" name="transition_time_between_activites_fade" format="integer">3500</item>
     <item type="integer" name="loading_time_animation" format="integer">1000</item>
     <item type="integer" name="loading_end_time_animation" format="integer">1500</item>
-    <item type="integer" name="decontracting_time_animation" format="integer">1800</item>
+    <item type="integer" name="decontracting_time_animation" format="integer">2000</item>
     <item type="integer" name="decontracting_time_animation_onRestart" format="integer">300</item>
 </resources>

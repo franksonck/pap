@@ -5,7 +5,6 @@ package fr.jlm2017.pap.MongoDB;
  */
 import java.io.IOException;
 
-import fr.jlm2017.pap.Militant;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -15,7 +14,7 @@ import android.os.AsyncTask;
 import android.util.Pair;
 
 
-public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,String>> {
+public abstract class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,String>> implements InterfaceReceivedData<Pair<Boolean,String>> {
 
     private static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -62,6 +61,11 @@ public class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boolean,Stri
         catch (Exception e) {
             return Pair.create("",false);
         }
+    }
+
+    @Override
+    protected void onPostExecute(Pair<Boolean, String> arrayListBooleanPair) {
+        onResponseReceived(arrayListBooleanPair);
     }
 
 }

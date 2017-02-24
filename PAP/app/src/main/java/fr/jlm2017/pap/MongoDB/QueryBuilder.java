@@ -4,9 +4,6 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 
-import fr.jlm2017.pap.Militant;
-import fr.jlm2017.pap.Porte;
-
 /**
  * Created by thoma on 14/02/2017.
  */
@@ -15,9 +12,9 @@ public class QueryBuilder {
 
     /**
      * Specify your database name here
-     * @return
+     * @return String databaseName
      */
-    public String getDatabaseName() {
+    private String getDatabaseName() {
         return "papjlm";
     }
 
@@ -25,7 +22,7 @@ public class QueryBuilder {
      * Specify your MongoLab API here
      * @return
      */
-    public String getApiKey() {
+    private String getApiKey() {
         return "UWo1YV1Xuga85HQdNKS_W252YIvDJB3h";
     }
 
@@ -34,7 +31,7 @@ public class QueryBuilder {
      * collections and documents
      * @return
      */
-    public String getBaseUrl()
+    private String getBaseUrl()
     {
         return "https://api.mlab.com/api/1/databases/"+getDatabaseName()+"/collections/";
     }
@@ -43,7 +40,7 @@ public class QueryBuilder {
      * Completes the formating of your URL and adds your API key at the end
      * @return
      */
-    public String docApiKeyUrl()
+    private String docApiKeyUrl()
     {
         return "?apiKey="+getApiKey();
     }
@@ -52,7 +49,7 @@ public class QueryBuilder {
      * Builds a complete URL using the methods specified above
      * @return
      */
-    public String buildObjectsSaveURL(DataObject objects) //objects = "militants" ou "portes"
+    String buildObjectsSaveURL(DataObject objects) //objects = "militants" ou "portes"
     {
         String solution;
         if(objects.getClass()==Militant.class)
@@ -65,16 +62,16 @@ public class QueryBuilder {
         return buildObjectsSaveURL(solution);
     }
 
-    public String buildObjectsSaveURL(String objects) //objects = "militants" ou "portes"
+    private String buildObjectsSaveURL(String objects) //objects = "militants" ou "portes"
     {
         return getBaseUrl()+objects+docApiKeyUrl();
     }
 
-    public String builObjectGetAllURL(String objects) {
+    String builObjectGetAllURL(String objects) {
         return buildObjectsSaveURL(objects);
     }
 
-    public String builObjectGetFilteredURL(String objects, ArrayList<Pair<String,String>> ids) { // on donne une collection et des couples id, valeur pour filtrer
+    String builObjectGetFilteredURL(String objects, ArrayList<Pair<String, String>> ids) { // on donne une collection et des couples id, valeur pour filtrer
         String id;
         if(objects.equals("militants"))
         {
@@ -94,7 +91,7 @@ public class QueryBuilder {
     }
 
 
-    public String buildObjectsUpdateURL(DataObject objects) //URL d'update
+    String buildObjectsUpdateURL(DataObject objects) //URL d'update
     {
         String solution;
         if(objects.getClass()==Militant.class)
@@ -113,7 +110,7 @@ public class QueryBuilder {
      * @return
      */
 
-    public String createObject(DataObject contact) {
+    String createObject(DataObject contact) {
         if(contact.getClass()==Militant.class)
         {
             return createMilitant((Militant) contact);
@@ -123,7 +120,7 @@ public class QueryBuilder {
         }
     }
 
-    public String createMilitant(Militant contact)
+    private String createMilitant(Militant contact)
     {
         return String
                 .format("{\"militant\"  : {\"pseudo\": \"%s\", "
@@ -132,20 +129,20 @@ public class QueryBuilder {
                         contact.pseudo, contact.email, contact.password, contact.admin);
     }
 
-    public String createPorte(Porte contact)
+    private String createPorte(Porte contact)
     {
         return String
-                .format("{\"porte\"  : {\"adresse\": \"%s\", "
-                                + "\"ville\": \"%s\", \"ouverte\": \"%b\", "
+                .format("{\"porte\"  : {\"adresseResume\": \"%s\", \"complement\": \"%s\",\"nom_rue\": \"%s\",\"nom_ville\": \"%s\",\"numA\": \"%s\",\"numS\": \"%s\", "
+                                + "\"ouverte\": \"%b\", "
                                 + "\"revenir\": \"%b\", \"latitude\": \"%f\","
                                 + "\"longitude\": \"%f\"}}",
-                        contact.adresse, contact.ville, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
+                        contact.adresseResume,contact.complement, contact.nom_rue, contact.nom_ville, contact.numA, contact.numS, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
     }
 
 
     //pour l'update on rajoute "set" devant :
 
-    public String setObject(DataObject contact) {
+    String setObject(DataObject contact) {
         if(contact.getClass()==Militant.class)
         {
             return setMilitant((Militant) contact);
@@ -155,7 +152,7 @@ public class QueryBuilder {
         }
     }
 
-    public String setMilitant(Militant contact)
+    private String setMilitant(Militant contact)
     {
         return String
                 .format("{\"$set\" : {\"militant\" : {\"pseudo\": \"%s\", "
@@ -164,14 +161,14 @@ public class QueryBuilder {
                         contact.pseudo, contact.email, contact.password, contact.admin);
     }
 
-    public String setPorte(Porte contact)
+    private String setPorte(Porte contact)
     {
         return String
-                .format("{\"$set\" : {\"porte\" :{\"adresse\": \"%s\", "
-                                + "\"ville\": \"%s\", \"ouverte\": \"%b\", "
-                                + "\"revenir\": \"%b\", \"latitude\": \"%f\","
-                                + "\"longitude\": \"%f\"}}}",
-                        contact.adresse, contact.ville, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
+                .format("{\"$set\" : {\"porte\"  : {\"adresseResume\": \"%s\", \"complement\": \"%s\",\"nom_rue\": \"%s\",\"nom_ville\": \"%s\",\"numA\": \"%s\",\"numS\": \"%s\", \"\n" +
+                                "                                + \"\\\"ouverte\\\": \\\"%b\\\", \"\n" +
+                                "                                + \"\\\"revenir\\\": \\\"%b\\\", \\\"latitude\\\": \\\"%f\\\",\"\n" +
+                                "                                + \"\"longitude\": \"%f\"}}}",
+                        contact.adresseResume,contact.complement, contact.nom_rue, contact.nom_ville, contact.numA, contact.numS, contact.ouverte, contact.revenir, contact.latitude, contact.longitude);
     }
 }
 

@@ -10,13 +10,14 @@ import android.util.Pair;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import fr.jlm2017.pap.GeoLocalisation.GeoData;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<DataObject>, Boolean>> {
+public abstract class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<DataObject>, Boolean>> implements  InterfaceReceivedData<Pair<ArrayList<DataObject>, Boolean>> {
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -80,4 +81,8 @@ public class GetAllAsyncTask extends AsyncTask<String, Void, Pair<ArrayList<Data
         }
     }
 
+    @Override
+    protected void onPostExecute(Pair<ArrayList<DataObject>, Boolean> arrayListBooleanPair) {
+        onResponseReceived(arrayListBooleanPair);
+    }
 }

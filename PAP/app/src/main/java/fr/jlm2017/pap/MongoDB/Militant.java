@@ -1,4 +1,4 @@
-package fr.jlm2017.pap;
+package fr.jlm2017.pap.MongoDB;
 
 /**
  * Created by thoma on 14/02/2017.
@@ -6,8 +6,6 @@ package fr.jlm2017.pap;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import fr.jlm2017.pap.MongoDB.DataObject;
 
 public class Militant extends DataObject implements Parcelable {
 

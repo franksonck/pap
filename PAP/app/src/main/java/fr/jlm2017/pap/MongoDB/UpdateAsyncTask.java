@@ -16,7 +16,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
+public abstract class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolean> implements InterfaceReceivedData<Boolean> {
 
     private static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -61,6 +61,11 @@ public class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolean> {
         catch (Exception e) {
             return Pair.create("",false);
         }
+    }
+
+    @Override
+    protected void onPostExecute(Boolean arrayListBooleanPair) {
+        onResponseReceived(arrayListBooleanPair);
     }
 
 }

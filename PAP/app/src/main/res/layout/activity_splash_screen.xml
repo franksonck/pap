@@ -5,13 +5,13 @@
     android:id="@+id/activity_splash_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.jlm2017.pap.SplashScreen"
+    tools:context="fr.jlm2017.pap.Activities.SplashScreen"
     android:background="@color/tw__composer_white">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logo_orange_bleu"
+        app:srcCompat="@mipmap/logo_phi"
         android:id="@+id/imageView3"
         android:layout_above="@+id/MegaTitre"
         android:layout_alignParentStart="true"

@@ -34,7 +34,28 @@
 
     <!-- Strings in the Check Activity -->
     <string name="dialog_first_connection">Bienvenue à toi cher Insoumis(e), commence par choisir un pseudo et éventuellement changer ton mot de passe ^^</string>
-
+    <string name="nom_de_rue">Nom de rue</string>
+    <string name="ville">Ville</string>
+    <string name="bis">Bis</string>
+    <string name="gps_use">Remplir avec le GPS \n(précision basse)</string>
+    <string name="gps_use_precise">Remplir avec le GPS </string>
+    <string name="activer_le_gps">Activer le GPS</string>
+    <string name="envoyer">Envoyer</string>
+    <string name="attente">En attente du GPS</string>
+    <string name="dialog_title_GPS">Sélectionnez la bonne adresse</string>
+    <string name="compl_ment_d_adresse">Complément d\'adresse (Optionnel)</string>
+    <string name="admin_menu">Admin</string>
+    <string name="modifier_mes_donn_es_personnelles">Modifier mes données personnelles</string>
+    <string name="d_connexion">Déconnexion</string>
+    <string name="num_ro_dans_la_rue">Numéro dans la rue</string>
+    <string name="appartement">Appartement ?</string>
+    <string name="porte_ouverte">Porte Ouverte ?</string>
+    <string name="utile_de_revenir">Utile de revenir ?</string>
+    <string name="menu_utilisateur">Menu utilisateur</string>
+    <string name="pseudo">Pseudo</string>
+    <string name="password">Password</string>
+    <string name="sauver">Sauver</string>
+    <string name="annuler">Annuler</string>
 
 
 </resources>
