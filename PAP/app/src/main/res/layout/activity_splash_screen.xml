@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="fr.jlm2017.pap.Activities.SplashScreen"
-    android:background="@color/tw__composer_white">
+    android:background="@color/white">
 
     <ImageView
         android:layout_width="wrap_content"

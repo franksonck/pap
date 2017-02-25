@@ -44,7 +44,7 @@
                     app:spinning_bar_width="4dp"
                     app:initialCornerAngle="50dp"
                     app:finalCornerAngle="50dp"
-                    android:textColor="@color/tw__composer_white"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     android:layout_gravity="center"
                     android:text="@string/gps_use"
@@ -227,7 +227,7 @@
                 app:spinning_bar_width="4dp"
                 app:initialCornerAngle="50dp"
                 app:finalCornerAngle="50dp"
-                android:textColor="@color/tw__composer_white"
+                android:textColor="@color/white"
                 android:textStyle="bold"
 
                 android:text="@string/envoyer"

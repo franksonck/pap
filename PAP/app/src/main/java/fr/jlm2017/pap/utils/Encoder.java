@@ -1,18 +1,32 @@
 package fr.jlm2017.pap.utils;
 
+import android.util.Base64;
+
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.PBEKeySpec;
+
 
 /**
  * Created by thoma on 22/02/2017.
  */
 
 public class Encoder {
+
+    public static String coding = "JLM2017LinsoumiSe";
 
     public static String encode(String password) {
         String res ="";
@@ -95,4 +109,108 @@ public class Encoder {
         }
         return bytes;
     }
+
+    public static String codeString (String str) {
+        DESKeySpec keySpec = null;
+        try {
+            keySpec = new DESKeySpec(coding.getBytes("UTF8"));
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        SecretKeyFactory keyFactory = null;
+        try {
+            keyFactory = SecretKeyFactory.getInstance("DES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        SecretKey key = null;
+        try {
+            key = keyFactory.generateSecret(keySpec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        // ENCODE plainTextPassword String
+        byte[] cleartext = new byte[0];
+        try {
+            cleartext = str.getBytes("UTF8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Cipher cipher = null; // cipher is not thread safe
+        try {
+            cipher = Cipher.getInstance("DES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        try {
+            return Base64.encodeToString(cipher.doFinal(cleartext),Base64.URL_SAFE);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+
+    }
+
+    public static String decodeString (String str) {
+        DESKeySpec keySpec = null;
+        try {
+            keySpec = new DESKeySpec(coding.getBytes(StandardCharsets.UTF_8));
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        SecretKeyFactory keyFactory = null;
+        try {
+            keyFactory = SecretKeyFactory.getInstance("DES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        SecretKey key = null;
+        try {
+            key = keyFactory.generateSecret(keySpec);
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+
+        // DECODE encryptedPwd String
+        byte[] encrypedPwdBytes = Base64.decode(str,Base64.URL_SAFE);
+
+        Cipher cipher = null;// cipher is not thread safe
+        try {
+            cipher = Cipher.getInstance("DES");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+        try {
+            cipher.init(Cipher.DECRYPT_MODE, key);
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        byte[] plainTextPwdBytes = new byte[0];
+        try {
+            plainTextPwdBytes = (cipher.doFinal(encrypedPwdBytes));
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        }
+
+        return new String(plainTextPwdBytes, StandardCharsets.UTF_8);
+    }
+
 }

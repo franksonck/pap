@@ -52,14 +52,12 @@ public abstract class GetAsyncTask extends AsyncTask<Pair<String,ArrayList<Pair<
             if(contact.first.equals("militants")) {
                 DataWrapperMilitant dataWrapper = DataWrapperMilitant.fromJson(updatedJson);
                 for (DataWrapperMilitant.BigDataMilitant big : dataWrapper.data) {
-                    big.militant.id_=big._id.$oid;
                     objectsGet.add(big.militant);
                 }
             }
             else {
                 DataWrapperPortes dataWrapper = DataWrapperPortes.fromJson(updatedJson);
                 for (DataWrapperPortes.BigDataPorte big : dataWrapper.data) {
-                    big.porte.id_=big._id.$oid;
                     objectsGet.add(big.porte);
                 }
             }

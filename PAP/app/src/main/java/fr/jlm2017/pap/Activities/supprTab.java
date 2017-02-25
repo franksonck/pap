@@ -184,7 +184,7 @@ public class supprTab extends Fragment{
             if ("DATA_ACTION".equals(intent.getAction()))
             {
                 Militant mili  = intent.getParcelableExtra("DATA_EXTRA");
-                System.out.println("ID caché : "+mili.id_);
+//                //System.out.println("ID caché : "+mili.id_);
                 addMilitant(mili);
                 adapter.notifyDataSetChanged();
             }

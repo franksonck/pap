@@ -15,3 +15,29 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+## PAS TOUCHE AUX DATAWRAPPER DB
+-keep class fr.jlm2017.pap.MongoDB.DataWrapperPortes {
+                                                         public private *;
+                                                     }
+-keep class fr.jlm2017.pap.MongoDB.DataWrapperMilitant {
+                                                          public private *;
+                                                      }
+-keep class fr.jlm2017.pap.MongoDB.Identifier {
+                                                 public private *;
+                                             }
+-keep class fr.jlm2017.pap.MongoDB.Porte {
+                                            public private *;
+                                        }
+-keep class fr.jlm2017.pap.MongoDB.Militant {
+                                                public private *;
+                                            }
+
+## PAS TOUCHE AUX DATAWRAPPER GEO
+
+-keep class fr.jlm2017.pap.GeoLocalisation.GeoData {
+                                                       public private *;
+                                                   }
+-keep class fr.jlm2017.pap.GeoLocalisation.GeoDataWrapper {
+                                                              public private *;
+                                                          }
+-dontwarn okio.**

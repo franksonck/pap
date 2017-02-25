@@ -95,7 +95,7 @@
             app:spinning_bar_width="4dp"
             app:initialCornerAngle="50dp"
             app:finalCornerAngle="50dp"
-            android:textColor="@color/tw__composer_white"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
             android:text="@string/sauver"
@@ -107,7 +107,7 @@
 
         <Button
             android:background="@drawable/button_cancel_shape_default_rounded"
-            android:textColor="@color/tw__composer_white"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:text="@string/annuler"
             android:layout_width="match_parent"

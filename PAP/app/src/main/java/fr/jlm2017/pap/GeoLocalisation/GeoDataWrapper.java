@@ -13,7 +13,7 @@ import fr.jlm2017.pap.MongoDB.Militant;
  */
 
 class GeoDataWrapper {
-        List<GeoData> results;
+        public List<GeoData> results;
         public StatusData status;
 
         static GeoDataWrapper fromJson(String s) {
