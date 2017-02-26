@@ -43,7 +43,7 @@ public abstract class UpdateAsyncTask extends AsyncTask<DataObject, Void, Boolea
             e.printStackTrace();
         }
 
-        System.out.println(response);
+        //System.out.println(response);
         assert result != null;
         return result.second;
 

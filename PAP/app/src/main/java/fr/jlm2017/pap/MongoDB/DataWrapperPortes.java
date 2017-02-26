@@ -12,7 +12,11 @@ public class DataWrapperPortes {
         public List<BigDataPorte> data;
 
         static DataWrapperPortes fromJson(String s) {
-            return new Gson().fromJson(s, DataWrapperPortes.class);
+            DataWrapperPortes dw = new Gson().fromJson(s, DataWrapperPortes.class);
+            for(BigDataPorte big : dw.data) {
+                big.porte.id_=big._id.$oid;
+            }
+            return dw;
         }
 
         public static String IDfromJson(String s){

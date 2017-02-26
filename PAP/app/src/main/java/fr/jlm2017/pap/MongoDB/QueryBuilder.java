@@ -4,6 +4,8 @@ import android.util.Pair;
 
 import java.util.ArrayList;
 
+import fr.jlm2017.pap.utils.Encoder;
+
 /**
  * Created by thoma on 14/02/2017.
  */
@@ -23,7 +25,7 @@ public class QueryBuilder {
      * @return
      */
     private String getApiKey() {
-        return "UWo1YV1Xuga85HQdNKS_W252YIvDJB3h";
+        return Encoder.decodeString("ccPdsJPdnD-dinB0kFpRz7gBSjf0dMBO5XpaXeS6vG_UOKiHqMSSig==");
     }
 
     /**

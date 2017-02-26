@@ -41,7 +41,7 @@ public abstract class SaveAsyncTask extends AsyncTask<DataObject, Void, Pair<Boo
             e.printStackTrace();
         }
 
-//        System.out.println(response);
+//        //System.out.println(response);
         String id="";
         assert result != null;
         if(result.second && contact.getClass()== Militant.class) id= DataWrapperMilitant.IDfromJson(response); // récupère l'ID renvoyé par le server

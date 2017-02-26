@@ -1,4 +1,6 @@
 <resources>
+    <string name="coding_phrase">JLM2017LinsoumiSe</string>
+
     <string name="app_name">Porte-A-Porte by FI</string>
     <string name="title_activity_login">Connexion au service</string>
     <string name="basePWD">yeswecanchon</string>
@@ -56,6 +58,8 @@
     <string name="password">Password</string>
     <string name="sauver">Sauver</string>
     <string name="annuler">Annuler</string>
+    <string name="title_activity_test_scroll">TestScrollActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 
 
 </resources>

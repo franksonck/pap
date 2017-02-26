@@ -41,7 +41,7 @@ public abstract class DeleteAsyncTask extends AsyncTask<DataObject, Void, Boolea
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(response);
+        //System.out.println(response);
         assert result != null;
         return result.second;
 

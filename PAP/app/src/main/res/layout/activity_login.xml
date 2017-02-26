@@ -81,7 +81,7 @@
                 app:initialCornerAngle="50dp"
                 app:finalCornerAngle="50dp"
                 android:id="@+id/email_sign_in_button"
-                android:textColor="@color/tw__composer_white"
+                android:textColor="@color/white"
                 android:textStyle="bold"
 
                 android:layout_gravity="center_horizontal"

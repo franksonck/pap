@@ -32,7 +32,7 @@
             app:spinning_bar_width="4dp"
             app:initialCornerAngle="50dp"
             app:finalCornerAngle="50dp"
-            android:textColor="@color/tw__composer_white"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:text="Refresh"
             android:layout_width="wrap_content"

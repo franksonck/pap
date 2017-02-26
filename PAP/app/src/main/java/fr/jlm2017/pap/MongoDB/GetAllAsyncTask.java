@@ -44,7 +44,7 @@ public abstract class GetAllAsyncTask extends AsyncTask<String, Void, Pair<Array
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        System.out.println(response);
+//        //System.out.println(response);
         assert result != null;
         if(result.second){
             String updatedJson = "{\"data\" : " + response + "}";

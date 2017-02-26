@@ -345,8 +345,10 @@ public class Check extends AppCompatActivity {
                 }
                 else{//si aucun numéro dans le geocoding, on garde celui du formulaire qui est plus exact et on regarde si on a pas des coordonnées GPS
                     if(latitude!=0&&longitude!=0){
-                        adressLatitude=latitude;
-                        adressLongitude=longitude;
+                        if(GeoData.distanceGPS(latitude,longitude,adressLatitude,adressLongitude)<500) { //si on est a + de 500m de la rue on ne prend pas nos coordonnées mais celles de la rue (cas ou l'on veut permettre de signaler à distance qu'on a toqué quelquepart et que cet endroit n'est pas répertorié)
+                            adressLatitude = latitude;
+                            adressLongitude = longitude;
+                        }
                     }
                     formatedFullAdress=streetNum+", "+formatedFullAdress;
                 }

@@ -48,8 +48,8 @@ public abstract class GetReverseLoc extends AsyncTask<Pair<Double,Double>, Void,
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("réponse geodecoder reverse : "+response);
-        System.out.println("success : "+result.second);
+        //System.out.println("réponse geodecoder reverse : "+response);
+        //System.out.println("success : "+result.second);
 
         if(result.second){
             GeoDataWrapper dataWrapper = GeoDataWrapper.fromJson(response);

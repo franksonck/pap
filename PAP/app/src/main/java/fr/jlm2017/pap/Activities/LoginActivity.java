@@ -199,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             Militant mili = (Militant) result.first.get(0);
                             String hidden = Encoder.encode(password);
-                            System.out.println(" pwd : " + hidden + "\n stored : " + mili.password);
+                            //System.out.println(" pwd : " + hidden + "\n stored : " + mili.password);
 
                             if (Encoder.decode(password, mili.password)) {
                                 regMilitant = mili;

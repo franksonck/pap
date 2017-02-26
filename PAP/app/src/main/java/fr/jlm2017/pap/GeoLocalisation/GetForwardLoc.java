@@ -43,8 +43,8 @@ public abstract class GetForwardLoc extends AsyncTask<Triple<String,String,Strin
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("réponse geodecoder forward : "+response);
-        System.out.println("success : "+result.second);
+        //System.out.println("réponse geodecoder forward : "+response);
+        //System.out.println("success : "+result.second);
 
         if(result.second){
             GeoDataWrapper dataWrapper = GeoDataWrapper.fromJson(response);
