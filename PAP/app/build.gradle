@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        JLMrelease {
+            keyAlias 'JLM2017'
+            keyPassword 'JLM2017'
+            storeFile file('F:/Github/pap/keyFile/keyStoreJLM.jks')
+            storePassword 'insoumis'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
     defaultConfig {
@@ -19,6 +27,7 @@ android {
             debuggable false
             jniDebuggable false
             renderscriptDebuggable false
+            signingConfig signingConfigs.JLMrelease
         }
     }
 }

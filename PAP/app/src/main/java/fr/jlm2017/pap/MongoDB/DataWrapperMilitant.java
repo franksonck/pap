@@ -16,6 +16,7 @@ public class DataWrapperMilitant {
             DataWrapperMilitant dw = new Gson().fromJson(s, DataWrapperMilitant.class);
             for(BigDataMilitant big : dw.data) {
                 big.militant.id_=big._id.$oid;
+
             }
             return dw;
         }

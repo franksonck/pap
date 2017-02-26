@@ -16,12 +16,9 @@
 #   public *;
 #}
 ## PAS TOUCHE AUX DATAWRAPPER DB
--keep class fr.jlm2017.pap.MongoDB.DataWrapperPortes {
-                                                         public private *;
-                                                     }
--keep class fr.jlm2017.pap.MongoDB.DataWrapperMilitant {
-                                                          public private *;
-                                                      }
+-keepattributes InnerClasses
+-keep class fr.jlm2017.pap.MongoDB.DataWrapperPortes** {*;}
+-keep class fr.jlm2017.pap.MongoDB.DataWrapperMilitant** {*;}
 -keep class fr.jlm2017.pap.MongoDB.Identifier {
                                                  public private *;
                                              }
@@ -34,10 +31,18 @@
 
 ## PAS TOUCHE AUX DATAWRAPPER GEO
 
--keep class fr.jlm2017.pap.GeoLocalisation.GeoData {
-                                                       public private *;
-                                                   }
--keep class fr.jlm2017.pap.GeoLocalisation.GeoDataWrapper {
-                                                              public private *;
-                                                          }
--dontwarn okio.**
+-keep class fr.jlm2017.pap.GeoLocalisation.GeoData** {*;}
+-keep class fr.jlm2017.pap.GeoLocalisation.GeoDataWrapper** {*;}
+
+-dontwarn com.google.gson.**
+-dontwarn java.nio.file.**
+-dontwarn org.codehaus.mojo.animal_sniffer.**
+-dontwarn com.squareup.okhttp.internal.huc.**
+
+-keep class com.android.volley.error.** { *; }
+-keep class com.squareup.okhttp.internal.huc.** { *; }
+-keep class okio.** { *; }
+
+-keep class android.support.design.widget.** { *; }
+-keep interface android.support.design.widget.** { *; }
+-dontwarn android.support.design.**
