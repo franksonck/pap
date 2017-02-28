@@ -6,15 +6,16 @@ package fr.jlm2017.pap.GeoLocalisation;
  */
 
 public class GeoData {
-    public GeoComponents components;
+    public GeoComponents components = new GeoComponents();
     public int confidence=0;
     public String formatted="";
-    public GeoGeometry geometry;
+    public GeoGeometry geometry = new GeoGeometry();
 
     public class GeoComponents {
         public String city="";
         public String house_number="";
         public String road="";
+        public String village="";
     }
 
     public class GeoGeometry {

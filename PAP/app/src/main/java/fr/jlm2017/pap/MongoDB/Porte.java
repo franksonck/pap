@@ -8,16 +8,16 @@ import fr.jlm2017.pap.MongoDB.DataObject;
 
 public class Porte extends DataObject {
 
-    public String adresseResume;
-    public String numS;
-    public String numA;
-    public String complement;
-    public String nom_rue;
-    public String nom_ville;
-    public Boolean ouverte;
-    public Boolean revenir;
-    public double latitude;
-    public double longitude;
+    public String adresseResume="";
+    public String numS="";
+    public String numA="";
+    public String complement="";
+    public String nom_rue="";
+    public String nom_ville="";
+    public Boolean ouverte=false;
+    public Boolean revenir=false;
+    public double latitude=0;
+    public double longitude=0;
 
     public Porte(String adresseResume, String numS, String numA, String complement, String nom_rue, String nom_ville, Boolean ouverte, Boolean revenir, double latitude, double longitude) {
         this.adresseResume = adresseResume;

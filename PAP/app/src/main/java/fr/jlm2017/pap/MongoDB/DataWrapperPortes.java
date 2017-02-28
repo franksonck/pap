@@ -30,8 +30,8 @@ public class DataWrapperPortes {
         }
 
     class BigDataPorte {
-        public Identifier _id ;
-        public Porte porte;
+        public Identifier _id = new Identifier();
+        public Porte porte = new Porte("","","","","","",false,false,0,0);
 
     }
 

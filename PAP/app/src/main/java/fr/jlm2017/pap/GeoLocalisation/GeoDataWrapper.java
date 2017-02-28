@@ -14,7 +14,7 @@ import fr.jlm2017.pap.MongoDB.Militant;
 
 class GeoDataWrapper {
         public List<GeoData> results;
-        public StatusData status;
+        public StatusData status= new StatusData();
 
         static GeoDataWrapper fromJson(String s) {
             GeoDataWrapper dw = new Gson().fromJson(s, GeoDataWrapper.class);
@@ -28,6 +28,9 @@ class GeoDataWrapper {
                 }
                 if(data.components.road==null) {
                     data.components.road="";
+                }
+                if(data.components.city.equals("")&& data.components.village!=null) {
+                    data.components.city=data.components.village;
                 }
             }
             return dw;

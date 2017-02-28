@@ -9,10 +9,10 @@ import android.os.Parcelable;
 
 public class Militant extends DataObject implements Parcelable {
 
-    public String pseudo;
-    public String email;
-    public String password;
-    public boolean admin;
+    public String pseudo="";
+    public String email="";
+    public String password="";
+    public boolean admin=false;
 
 
     public Militant(String email, String password) {

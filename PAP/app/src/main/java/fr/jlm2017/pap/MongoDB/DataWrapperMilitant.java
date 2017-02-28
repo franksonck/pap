@@ -32,8 +32,8 @@ public class DataWrapperMilitant {
         }
 
         public class BigDataMilitant {
-            public Identifier _id ;
-            public Militant militant;
+            public Identifier _id = new Identifier();
+            public Militant militant= new Militant("","");
 
         }
 
