@@ -20,11 +20,6 @@
             android:label="@string/title_activity_splash_screen"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Activities.LoginActivity"
@@ -34,16 +29,12 @@
             android:windowSoftInputMode="stateAlwaysHidden"></activity>
         <activity
             android:name=".Activities.Check"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Activities.AdminActivity"
-            android:label="@string/title_activity_admin"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".Activities.UpdateUserActivity"
-            android:label="Vos données"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

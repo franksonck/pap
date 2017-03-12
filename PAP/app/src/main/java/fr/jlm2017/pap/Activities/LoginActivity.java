@@ -23,17 +23,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+
 import android.util.Pair;
 import android.widget.Toast;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.utils.ButtonAnimationJLM;
 import fr.jlm2017.pap.utils.Encoder;
-import fr.jlm2017.pap.MongoDB.Militant;
-import fr.jlm2017.pap.MongoDB.DataObject;
-import fr.jlm2017.pap.MongoDB.GetAsyncTask;
 import fr.jlm2017.pap.R;
+import fr.jlm2017.pap.utils.OAuthAsyncTask;
 
 
 /**
@@ -44,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     public static boolean installed = false;
     //animation tools 1/////////////////////////
     private Handler handler ;
+    private String user_token = "";
     private int timing ;
     //animation tools 1- end/////////////////////////
     private static String SavedEmailsPreference = "SavedEmails_";
@@ -56,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
         //TODO: Replace this with your own logic
         return password.length() > 0;
     }
-    private Militant regMilitant;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
@@ -117,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-
+        user_token="";
     }
 
     private void populateAutoComplete() {
@@ -187,13 +185,12 @@ public class LoginActivity extends AppCompatActivity {
                 }, timing);
                 //animation tools 2-end/////////////////////////
             } else {
-                ArrayList<Pair<String, String>> indexValuesCouples = new ArrayList<>();
-                indexValuesCouples.add(Pair.create("email", email));
-                GetAsyncTask tsk = new GetAsyncTask() {
+                OAuthAsyncTask tsk = new OAuthAsyncTask() {
                     @Override
-                    public void onResponseReceived(Pair<ArrayList<DataObject>, Boolean> result) {
+                    public void onResponseReceived(Pair<String, Boolean> result) {
                         if (result.second) {// on a bien récupéré les données
-                            if (result.first.isEmpty()){
+                            user_token=result.first;
+                            /*if (result.first.isEmpty()){ //TODO miplement token response
                                 caseEmpty();
                                 return;
                             }
@@ -206,14 +203,14 @@ public class LoginActivity extends AppCompatActivity {
                                 caseOK(email);
                             } else {
                                 casePWDfalse();
-                            }
+                            }*/
                         } else {
                             mEmailSignInButtonAnimated.WrongButtonAnimation();
                             Toast.makeText(getApplicationContext(), "connexion à la BDD impossible, êtes vous bien connecté à internet ?", Toast.LENGTH_LONG).show();
                         }
                     }
                 };
-                tsk.execute(Pair.create("militants",indexValuesCouples));
+                tsk.execute(Pair.create(email,Encoder.encode(password)));
 
             }
         }
@@ -227,7 +224,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void run() {
                 final Intent logged = new Intent(LoginActivity.this,Check.class); // login OK on passe à CHeck
-                logged.putExtra("USER_EXTRA", regMilitant); // on envoie a Check les données utilisateur
+                logged.putExtra("USER_TOKEN", user_token); // on envoie a Check les données utilisateur
                 LoginActivity.this.startActivityForResult(logged,USER_LOG_OUT);
             }
         }, timing);

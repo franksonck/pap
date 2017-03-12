@@ -4,9 +4,6 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
-import fr.jlm2017.pap.MongoDB.Identifier;
-import fr.jlm2017.pap.MongoDB.Militant;
-
 /**
  * Created by thoma on 16/02/2017.
  * Cette classe permet d'interpréter les réponses des requetes effectuées sur la base
@@ -15,7 +12,6 @@ import fr.jlm2017.pap.MongoDB.Militant;
 class GeoDataWrapper {
         public List<GeoData> results;
         public StatusData status= new StatusData();
-
         static GeoDataWrapper fromJson(String s) {
             GeoDataWrapper dw = new Gson().fromJson(s, GeoDataWrapper.class);
             for(GeoData data : dw.results)

@@ -40,7 +40,6 @@ import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.GeoLocalisation.GeoData;
 import fr.jlm2017.pap.GeoLocalisation.GetForwardLoc;
 import fr.jlm2017.pap.GeoLocalisation.GetReverseLoc;
-import fr.jlm2017.pap.MongoDB.Militant;
 import fr.jlm2017.pap.MongoDB.SaveAsyncTask;
 import fr.jlm2017.pap.MongoDB.Porte;
 import fr.jlm2017.pap.R;
@@ -49,17 +48,15 @@ import fr.jlm2017.pap.utils.ButtonAnimationJLM;
 
 public class Check extends AppCompatActivity {
 
-    public static int USER_CHANGED_CODE =1259;
     // other variables
     //animation tools 1/////////////////////////
     private Handler handler;
     private int timing ;
     //animation tools 1- end/////////////////////////
-    private String appartNum, formatedFullAdress;
+    private String appartNum, formatedFullAdress, user_token;
     private String streetNum, streetName, complementAdress, cityName;
     private double latitude, longitude, adressLatitude, adressLongitude;
-    private boolean isAppart, isOpen, comeBack, numFilled, positionPrecise;
-    private Militant user;
+    private boolean isAppart, isOpen, numFilled, positionPrecise;
 
     //views variables
     private ImageButton menuImage;
@@ -67,7 +64,7 @@ public class Check extends AppCompatActivity {
     private CircularProgressButton mAddDoor, mGPS;
     private EditText mAdress, mNumS, mNumA, mCity, mComplement;
     private TextInputLayout appartLayout;
-    private CheckBox checkDoorOpen, checkComeBack, checkAppart, checkGPS;
+    private CheckBox checkDoorOpen, checkAppart, checkGPS;
 
     //GPS variables
 
@@ -86,7 +83,6 @@ public class Check extends AppCompatActivity {
     public void initValues () {
         numFilled = false;
         isOpen = false;
-        comeBack = false;
         positionPrecise = false;
         complementAdress = "";
         latitude = 0;
@@ -130,18 +126,15 @@ public class Check extends AppCompatActivity {
         mCity = (EditText) findViewById(R.id.Ville);
         mComplement = (EditText) findViewById(R.id.complement);
         checkDoorOpen = (CheckBox) findViewById(R.id.CheckOpenDoor);
-        checkComeBack = (CheckBox) findViewById(R.id.CheckComeBack);
         checkAppart = (CheckBox) findViewById(R.id.CheckAppart);
         checkGPS =  (CheckBox) findViewById(R.id.GPSActive);
         menuImage = (ImageButton)  findViewById(R.id.menuButtonImage);
         //values
         appartLayout.setAlpha(0);
         mNumA.setEnabled(false);
-        checkComeBack.setEnabled(false);
-        checkComeBack.setAlpha(0);
         isAppart = false;
 
-        user = getIntent().getParcelableExtra("USER_EXTRA");
+        user_token = getIntent().getParcelableExtra("USER_TOKEN");
 
         //GPS
         GPSInit();
@@ -164,7 +157,7 @@ public class Check extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if(user.pseudo.equals("")) dialogFirstConnection();
+        //if(user.pseudo.equals("")) dialogFirstConnection();
         initValues();
         resetUI();
         checkGPS.setChecked(false);
@@ -173,7 +166,7 @@ public class Check extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!user.pseudo.equals(""))checkGPS.setChecked(true);
+        //if(!user.pseudo.equals(""))checkGPS.setChecked(true);
     }
 
     @Override
@@ -182,37 +175,6 @@ public class Check extends AppCompatActivity {
         checkGPS.setChecked(false);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // On vérifie tout d'abord à quel intent on fait référence ici à l'aide de notre identifiant
-        if (requestCode == USER_CHANGED_CODE) {
-            // On vérifie aussi que l'opération s'est bien déroulée
-            switch(resultCode) {
-                case RESULT_OK :  user = data.getParcelableExtra("USER_EXTRA"); return;
-                default : return;
-            }
-
-        }
-    }
-
-    private void dialogFirstConnection() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.dialog_first_connection)
-                .setTitle("Première connexion");
-        builder.setCancelable(false);
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked OK button
-                Intent goUpdate = new Intent(Check.this, UpdateUserActivity.class);
-                goUpdate.putExtra("USER_EXTRA", user);
-                goUpdate.putExtra("USER_FIRST",true);
-                Check.this.startActivityForResult(goUpdate,USER_CHANGED_CODE);
-            }
-        });
-        AlertDialog box = builder.create();
-        box.show();
-    }
 
     // MAIN USE
 
@@ -249,7 +211,7 @@ public class Check extends AppCompatActivity {
                                         formatedFullAdress= formatedFullAdress+ " ( " +(isAppart? "Apt n° "+appartNum + " " : "") + complementAdress + " )";
                                     }
 
-                                    Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, comeBack, adressLatitude, adressLongitude);
+                                    Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude);
                                     savePorte(porte);
                                 }
 
@@ -358,7 +320,7 @@ public class Check extends AppCompatActivity {
                     formatedFullAdress= formatedFullAdress+ " ( " +(isAppart? "Apt n° "+appartNum + " " : "") + complementAdress + " )";
                 }
 
-                Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, comeBack, adressLatitude, adressLongitude);
+                Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude);
                 savePorte(porte);
 
             }
@@ -395,7 +357,7 @@ public class Check extends AppCompatActivity {
                             formatedFullAdress= formatedFullAdress+ " ( " +(isAppart? "Apt n° "+appartNum + " " : "") + complementAdress + " )";
                         }
 
-                        Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, comeBack, adressLatitude, adressLongitude);
+                        Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude);
                         savePorte(porte);
                         dialogInterface.cancel();
                     }
@@ -425,8 +387,8 @@ public class Check extends AppCompatActivity {
 
         SaveAsyncTask saveDoor = new SaveAsyncTask() {
             @Override
-            public void onResponseReceived(Pair<Boolean, String> result) {
-                if(!result.first) {// connexion ratée
+            public void onResponseReceived(Boolean result) {
+                if(!result) {// connexion ratée
                     mAddDoorAnimation.WrongButtonAnimation();
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -465,7 +427,6 @@ public class Check extends AppCompatActivity {
     {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_admin, menu);
-        if(!user.admin) menu.getItem(0).setEnabled(false);
         m = menu;
         return true;
     }
@@ -477,17 +438,6 @@ public class Check extends AppCompatActivity {
         {
             case R.id.logout:
                 finish();
-                return true;
-            case R.id.adminLog:
-                Intent goAdmin = new Intent(Check.this, AdminActivity.class);
-                goAdmin.putExtra("USER_EXTRA", user);
-                Check.this.startActivity(goAdmin);
-                return true;
-            case R.id.updateUser:
-                Intent goUpdate = new Intent(Check.this, UpdateUserActivity.class);
-                goUpdate.putExtra("USER_EXTRA", user);
-                goUpdate.putExtra("USER_FIRST",false);
-                Check.this.startActivityForResult(goUpdate,USER_CHANGED_CODE);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -745,20 +695,6 @@ public class Check extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 isOpen = b;
-                checkComeBack.setEnabled(b);
-                if (b) {
-                    checkComeBack.setAlpha(1);
-                } else {
-                    checkComeBack.setAlpha(0);
-                    checkComeBack.setChecked(false);
-                }
-            }
-        });
-
-        checkComeBack.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                comeBack = b;
             }
         });
 
@@ -773,24 +709,12 @@ public class Check extends AppCompatActivity {
                             case R.id.logout:
                                 finish();
                                 return true;
-                            case R.id.adminLog:
-                                Intent goAdmin = new Intent(Check.this, AdminActivity.class);
-                                goAdmin.putExtra("USER_EXTRA", user);
-                                Check.this.startActivity(goAdmin);
-                                return true;
-                            case R.id.updateUser:
-                                Intent goUpdate = new Intent(Check.this, UpdateUserActivity.class);
-                                goUpdate.putExtra("USER_EXTRA", user);
-                                goUpdate.putExtra("USER_FIRST",false);
-                                Check.this.startActivityForResult(goUpdate,USER_CHANGED_CODE);
-                                return true;
                         }
                         return true;
                     }
                 });
                 MenuInflater inflate = popup.getMenuInflater();
                 inflate.inflate(R.menu.menu_admin, popup.getMenu());
-                if(!user.admin) popup.getMenu().getItem(0).setEnabled(false);
                 popup.show();
             }
         });
@@ -812,7 +736,6 @@ public class Check extends AppCompatActivity {
         checkGPS.setEnabled(true);
         checkAppart.setEnabled(true);
         if(checkAppart.isChecked())mNumA.setEnabled(true);
-        if(checkDoorOpen.isChecked())checkComeBack.setEnabled(true);
         checkDoorOpen.setEnabled(true);
     }
 
@@ -823,7 +746,6 @@ public class Check extends AppCompatActivity {
         checkGPS.setEnabled(false);
         checkAppart.setEnabled(false);
         if(checkAppart.isChecked())mNumA.setEnabled(false);
-        if(checkDoorOpen.isChecked())checkComeBack.setEnabled(false);
         checkDoorOpen.setEnabled(false);
     }
 

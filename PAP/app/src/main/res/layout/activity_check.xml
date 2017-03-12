@@ -190,18 +190,18 @@
                     android:layout_above="@+id/AddDoor"
                     android:layout_alignParentStart="true" />
 
-                <CheckBox
+<!--                <CheckBox
                     android:text="@string/utile_de_revenir"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/CheckComeBack"
                     android:layout_above="@+id/AddDoor"
                     android:layout_toEndOf="@+id/streeNumFix"
-                    android:layout_marginLeft="50dp" />
+                    android:layout_marginLeft="50dp" />-->
 
             </RadioGroup>
 
-            <ImageButton
+              <ImageButton
                 app:srcCompat="@android:drawable/ic_menu_manage"
                 android:id="@+id/menuButtonImage"
                 android:background="@drawable/button_menu_shape_default_rounded"
