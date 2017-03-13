@@ -12,13 +12,6 @@ import fr.jlm2017.pap.utils.Encoder;
 
 public class QueryBuilder {
 
-    /**
-     * Specify your database name here
-     * @return String databaseName
-     */
-    private String getDatabaseName() {
-        return "papjlm";
-    }
 
     /**
      * Specify your MongoLab API here
@@ -35,7 +28,7 @@ public class QueryBuilder {
      */
     private String getBaseUrl()
     {
-        return "https://api.mlab.com/api/1/databases/"+getDatabaseName()+"/collections/";
+        return "http://192.168.10.102:8080/";
     }
 
 
