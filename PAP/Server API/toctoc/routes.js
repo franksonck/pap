@@ -6,6 +6,7 @@ var Porte = require ('./models/porte.js');
 // Middleware for all this routers requests
 router.use(function timeLog(req, res, next) {
   console.log('Request Received: ', dateDisplayed(Date.now()));
+  res.setHeader("Access-Control-Allow-Origin", "*");
   next();
 });
 
@@ -65,8 +66,8 @@ router.route('/proches').get(function(req,res){
                       }
                 }).limit(limit).exec(function(err, locations){
                   if (err)
-                    res.send(500, err);
-                  res.json(200, locations);
+                    res.status(500).send(err);
+                  res.status(200).json(locations);
                 });
 });
 
