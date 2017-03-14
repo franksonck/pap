@@ -53,7 +53,7 @@ public class Encoder {
     {
         int iterations = 1000;
         char[] chars = password.toCharArray();
-        byte[] salt = getSalt();
+        byte[] salt = getSalt(16);
 
         PBEKeySpec spec = new PBEKeySpec(chars, salt, iterations, 64 * 8);
         SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
@@ -61,10 +61,10 @@ public class Encoder {
         return iterations + ":" + toHex(salt) + ":" + toHex(hash);
     }
 
-    private static byte[] getSalt() throws NoSuchAlgorithmException
+    public static byte[] getSalt(int size) throws NoSuchAlgorithmException
     {
         SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-        byte[] salt = new byte[16];
+        byte[] salt = new byte[size];
         sr.nextBytes(salt);
         return salt;
     }
@@ -213,4 +213,30 @@ public class Encoder {
         return new String(plainTextPwdBytes, StandardCharsets.UTF_8);
     }
 
+
+    public static final class RandomString
+    {
+
+        /* Assign a string that contains the set of characters you allow. */
+        private static final String symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        private final SecureRandom random = new SecureRandom();
+
+        private final char[] buf;
+
+        public RandomString(int length)
+        {
+            if (length < 1)
+                throw new IllegalArgumentException("length < 1: " + length);
+            buf = new char[length];
+        }
+
+        public String nextString()
+        {
+            for (int idx = 0; idx < buf.length; ++idx)
+                buf[idx] = symbols.charAt(random.nextInt(symbols.length()));
+            return new String(buf);
+        }
+
+    }
 }

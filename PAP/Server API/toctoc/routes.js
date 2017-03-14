@@ -23,6 +23,10 @@ router.route('/portes').get (function (req,res) {
   });
 });
 
+router.route('/verifier').get (function (req,res) {
+    res.send (err);
+});
+
 router.route('/portes').post (function (req,res) {
   var porte           	= new Porte();
   porte.adresseResume	= req.body.porte.adresseResume;

@@ -1,9 +1,9 @@
 <resources>
     <string name="coding_phrase">JLM2017LinsoumiSe</string>
-
+    <string name="connectionURL">http://www.pitiot.eu</string>
+    <!--<string name="connectionURL">http://papjlm2017.fr/connexion</string>-->
     <string name="app_name">Porte-A-Porte by FI</string>
     <string name="title_activity_login">Connexion au service</string>
-    <string name="basePWD">yeswecanchon</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

@@ -57,5 +57,9 @@ public class QueryBuilder {
                                 + "\"longitude\": \"%f\"}}",
                         contact.adresseResume,contact.complement, contact.nom_rue, contact.nom_ville, contact.numA, contact.numS, contact.ouverte, contact.latitude, contact.longitude);
     }
+
+    public String buildOAuthURL() {
+        return getBaseUrl()+"verifier";
+    }
 }
 

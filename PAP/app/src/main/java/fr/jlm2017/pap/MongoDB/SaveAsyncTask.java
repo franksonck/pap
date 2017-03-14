@@ -14,7 +14,7 @@ import android.os.AsyncTask;
 import android.util.Pair;
 
 
-public abstract class SaveAsyncTask extends AsyncTask<Porte, Void, Boolean> implements InterfaceReceivedData<Boolean> {
+public abstract class SaveAsyncTask extends AsyncTask<Pair<Porte, String>, Void, Boolean> implements InterfaceReceivedData<Boolean> {
 
     private static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -22,34 +22,35 @@ public abstract class SaveAsyncTask extends AsyncTask<Porte, Void, Boolean> impl
     public OkHttpClient client;
 
     @Override
-    protected Boolean doInBackground(Porte... arg0) {
+    protected Boolean doInBackground(Pair<Porte, String>... arg0) {
 
-        Porte contact = arg0[0];
+        Pair<Porte, String> contact = arg0[0];
 
         QueryBuilder qb = new QueryBuilder();
 
         client = new OkHttpClient();
 
-        String json = qb.createPorte(contact);
+        String json = qb.createPorte(contact.first);
         Pair<String, Boolean> result =null;
         String response = "";
         try {
             String URL = qb.buildPorteSaveURL();
-            result = post(URL,json);
+            result = post(URL,json, contact.second);
             response =result.first;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-//        //System.out.println(response);
+//      System.out.println(response);
         assert result != null;
         return result.second;
 
     }
 
-    private Pair<String, Boolean> post(String url, String json) throws IOException {
+    private Pair<String, Boolean> post(String url, String json, String token) throws IOException {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
+                .header("Authorization",  "Bearer " + token)
                 .url(url)
                 .post(body)
                 .build();

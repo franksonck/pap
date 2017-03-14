@@ -53,7 +53,7 @@ public class Check extends AppCompatActivity {
     private Handler handler;
     private int timing ;
     //animation tools 1- end/////////////////////////
-    private String appartNum, formatedFullAdress, user_token;
+    private String appartNum, formatedFullAdress, app_token, user_id;
     private String streetNum, streetName, complementAdress, cityName;
     private double latitude, longitude, adressLatitude, adressLongitude;
     private boolean isAppart, isOpen, numFilled, positionPrecise;
@@ -134,7 +134,8 @@ public class Check extends AppCompatActivity {
         mNumA.setEnabled(false);
         isAppart = false;
 
-        user_token = getIntent().getParcelableExtra("USER_TOKEN");
+        app_token = getIntent().getStringExtra("APP_TOKEN");
+        user_id = getIntent().getStringExtra("USER_ID");
 
         //GPS
         GPSInit();
@@ -211,7 +212,7 @@ public class Check extends AppCompatActivity {
                                         formatedFullAdress= formatedFullAdress+ " ( " +(isAppart? "Apt n° "+appartNum + " " : "") + complementAdress + " )";
                                     }
 
-                                    Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude);
+                                    Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude,user_id);
                                     savePorte(porte);
                                 }
 
@@ -320,7 +321,7 @@ public class Check extends AppCompatActivity {
                     formatedFullAdress= formatedFullAdress+ " ( " +(isAppart? "Apt n° "+appartNum + " " : "") + complementAdress + " )";
                 }
 
-                Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude);
+                Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude,user_id);
                 savePorte(porte);
 
             }
@@ -357,7 +358,7 @@ public class Check extends AppCompatActivity {
                             formatedFullAdress= formatedFullAdress+ " ( " +(isAppart? "Apt n° "+appartNum + " " : "") + complementAdress + " )";
                         }
 
-                        Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude);
+                        Porte porte = new Porte(formatedFullAdress,streetNum,appartNum,complementAdress,streetName, cityName, isOpen, adressLatitude, adressLongitude,user_id);
                         savePorte(porte);
                         dialogInterface.cancel();
                     }
@@ -415,7 +416,7 @@ public class Check extends AppCompatActivity {
                 //animation tools 2-end/////////////////////////
             }
         };
-        saveDoor.execute(porte);
+        saveDoor.execute(Pair.create(porte,app_token));
     }
 
     //MENU

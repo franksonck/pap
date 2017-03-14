@@ -16,8 +16,9 @@ public class Porte {
     public Boolean ouverte=false;
     public double latitude=0;
     public double longitude=0;
+    public String user_id="";
 
-    public Porte(String adresseResume, String numS, String numA, String complement, String nom_rue, String nom_ville, Boolean ouverte, double latitude, double longitude) {
+    public Porte(String adresseResume, String numS, String numA, String complement, String nom_rue, String nom_ville, Boolean ouverte, double latitude, double longitude, String user_id) {
         this.adresseResume = adresseResume;
         this.numS = numS;
         this.numA = numA;
@@ -27,5 +28,6 @@ public class Porte {
         this.ouverte = ouverte;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.user_id = user_id;
     }
 }
