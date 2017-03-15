@@ -54,8 +54,8 @@ public class QueryBuilder {
                 .format("{\"porte\"  : {\"adresseResume\": \"%s\", \"complement\": \"%s\",\"nom_rue\": \"%s\",\"nom_ville\": \"%s\",\"numA\": \"%s\",\"numS\": \"%s\", "
                                 + "\"ouverte\": \"%b\", "
                                 + "\"latitude\": \"%f\","
-                                + "\"longitude\": \"%f\"}}",
-                        contact.adresseResume,contact.complement, contact.nom_rue, contact.nom_ville, contact.numA, contact.numS, contact.ouverte, contact.latitude, contact.longitude);
+                                + "\"longitude\": \"%f\", \"user_id\": \"%s\"}}",
+                        contact.adresseResume,contact.complement, contact.nom_rue, contact.nom_ville, contact.numA, contact.numS, contact.ouverte, contact.latitude, contact.longitude,contact.user_id);
     }
 
     public String buildOAuthURL() {

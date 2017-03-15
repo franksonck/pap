@@ -9,7 +9,9 @@ var porteSchema   = new Schema({
     numS: String,
 	numA: String,
     ouverte: Boolean,
-	latitude: Number,
-	longitude: Number
+	user_id: String,
+	location: {
+      type: [Number],
+      index: '2d'}
 	});
 module.exports = mongoose.model('Porte', porteSchema);

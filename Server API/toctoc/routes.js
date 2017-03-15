@@ -36,8 +36,8 @@ router.route('/portes').post (function (req,res) {
   porte.numS        	= req.body.porte.numS;
   porte.numA        	= req.body.porte.numA;
   porte.ouverte       	= req.body.porte.ouverte;
-  porte.latitude      	= req.body.porte.latitude;
-  porte.longitude		= req.body.porte.longitude;
+  porte.user_id			=req.body.porte.user_id;
+  porte.location      = [req.body.porte.latitude, req.body.porte.longitude];
 
   porte.save(function(err) {
     if (err)
@@ -59,11 +59,8 @@ router.route('/proches').get(function(req,res){
     var maxDistance = req.query.distance || 8;
     maxDistance /= 6371;
     var coords = [];
-    coords[0] = req.query.lon;
-    coords[1] = req.query.lat;
-    console.log(coords);
-    console.log(limit);
-    console.log(maxDistance);
+    coords[0] = req.query.lat;
+    coords[1] = req.query.lon;
     Porte.find({ location: {
                  $near: coords,
                  $maxDistance: maxDistance
@@ -86,8 +83,8 @@ router.route('/portes/:porte_id').put(function(req,res){
 	  porte.numS        	= req.body.porte.numS;
 	  porte.numA        	= req.body.porte.numA;
 	  porte.ouverte       	= req.body.porte.ouverte;
-      porte.latitude  = req.body.porte.latitude;
-      porte.longitude  = req.body.porte.longitude;
+      porte.location      = [req.body.porte.latitude, req.body.porte.longitude];
+	  porte.user_id			=req.body.porte.user_id;
       porte.save(function (err){
         if (err)
           res.send(err);
