@@ -24,7 +24,7 @@ router.route('/portes').get (function (req,res) {
 });
 
 router.route('/verifier').get (function (req,res) {
-    res.send (err);
+    res.send ("fail");
 });
 
 router.route('/portes').post (function (req,res) {
