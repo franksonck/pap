@@ -61,5 +61,13 @@ public class QueryBuilder {
     public String buildOAuthURL() {
         return getBaseUrl()+"verifier";
     }
+
+    public String buildProcheURL(Pair<Double, Double> first) {
+        return getBaseUrl()+"proches/?lat="+first.first+"&lon="+first.second;
+    }
+
+    public String buildGetMyPorteURL(String first) {
+        return getBaseUrl()+"user_porte/?user_id="+first;
+    }
 }
 
