@@ -54,6 +54,14 @@ router.route('/portes/:porte_id').get(function(req,res){
     });
 });
 
+router.route('/user_porte').get(function(req,res){
+    Porte.find({user_id: req.query.user_id}).exec(function(err, locations){
+                  if (err)
+                    res.status(500).send(err);
+                  res.status(200).json(locations);
+                });
+});
+
 router.route('/proches').get(function(req,res){
     var limit       = req.query.limit || 10;
     var maxDistance = req.query.distance || 8;
@@ -93,7 +101,7 @@ router.route('/portes/:porte_id').put(function(req,res){
   });
 });
 
-router.route('/porte/:porte_id').delete(function(req,res){
+router.route('/portes/:porte_id').delete(function(req,res){
   Porte.remove({_id:req.params.porte_id}, function(err, porte){
     if (err)
       res.send(err);

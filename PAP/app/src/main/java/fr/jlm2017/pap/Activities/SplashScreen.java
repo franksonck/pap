@@ -7,15 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Pair;
 
-import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
-
 import fr.jlm2017.pap.R;
 import fr.jlm2017.pap.utils.Encoder;
 import fr.jlm2017.pap.MongoDB.OAuthAsyncTask;
 
 public class SplashScreen extends AppCompatActivity {
-    public int SPLASH_SCREEN_TIME=3000;
+    public int SPLASH_SCREEN_TIME=2000;
     private static String SavedAppTokenPreference = "SavedAppTokenPreference";
     private static int BACK_FROM_WEB = 2000;
     private String token;
@@ -53,9 +50,9 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void onResponseReceived(Pair<String, Boolean> result) {
                 if(result.second){
-                    Intent goCheck = new Intent(getApplicationContext(),Check.class);
+                    Intent goCheck = new Intent(getApplicationContext(),Main.class);
                     goCheck.putExtra("APP_TOKEN", token);
-                    goCheck.putExtra("USER_ID", result.first);
+                    goCheck.putExtra("USER_ID", "toto");
                     startActivity(goCheck);
                     finish();
                 }
@@ -73,7 +70,7 @@ public class SplashScreen extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==BACK_FROM_WEB) {
            if(resultCode == RESULT_OK) {
-               Intent goCheck = new Intent(getApplicationContext(),Check.class);
+               Intent goCheck = new Intent(getApplicationContext(),CheckActivity.class);
                goCheck.putExtra("APP_TOKEN", token);
                goCheck.putExtra("USER_ID", data.getStringExtra("USER_ID"));
                startActivity(goCheck);

@@ -21,7 +21,7 @@ public class GeoDecoder {
     }
 
     GeoDecoder() {
-        fr=true;
+        fr=false;
     }
 
     String getReverseURL(double latitude, double longitude) {

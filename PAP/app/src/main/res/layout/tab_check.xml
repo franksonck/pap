@@ -1,0 +1,249 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="fr.jlm2017.pap.Activities.Main">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+
+                <CheckBox
+                    android:id="@+id/GPSActive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/activer_le_gps" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                        android:id="@+id/GPSButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="30dp"
+                        android:background="@drawable/button_shape_default_rounded"
+                        android:text="@string/gps_use"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        app:finalCornerAngle="50dp"
+                        app:initialCornerAngle="50dp"
+                        app:spinning_bar_color="@android:color/black"
+                        app:spinning_bar_width="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- DUMMY TO NOT GET FOCUS ON THE EDITTEXT -->
+            <LinearLayout
+                android:layout_width="0px"
+                android:layout_height="0dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:orientation="horizontal" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:id="@+id/StreetNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/streeNumFix"
+                    android:layout_alignParentEnd="true"
+                    android:ems="10"
+                    android:hint="@string/num_ro_dans_la_rue"
+                    android:imeOptions="actionDone"
+                    android:inputType="textVisiblePassword"
+                    android:nextFocusLeft="@id/StreetNum"
+                    android:nextFocusUp="@id/StreetNum" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:id="@+id/complement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/streeNumFix"
+                    android:layout_alignParentEnd="true"
+                    android:ems="10"
+                    android:hint="@string/compl_ment_d_adresse"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapSentences|textAutoCorrect"
+                    android:nextFocusLeft="@id/StreetNum"
+                    android:nextFocusUp="@id/StreetNum" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:id="@+id/Adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/nom_de_rue"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapSentences|textAutoCorrect"
+                    android:maxLines="1" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1">
+
+                <EditText
+                    android:id="@+id/Ville"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/ville"
+                    android:imeOptions="actionDone"
+                    android:inputType="textCapSentences|textAutoCorrect" />
+            </android.support.design.widget.TextInputLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/CheckAppart"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.5"
+                    android:checked="false"
+                    android:text="@string/appartement" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/DoorNumLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/DoorNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/numDoorFix"
+                        android:layout_centerHorizontal="false"
+                        android:ems="10"
+                        android:hint="Numéro d'appartement"
+                        android:imeOptions="actionDone"
+                        android:inputType="textVisiblePassword" />
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_weight="0.95"
+                android:orientation="horizontal">
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical">
+
+                    <CheckBox
+                        android:id="@+id/CheckOpenDoor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/AddDoor"
+                        android:layout_alignParentStart="true"
+                        android:text="@string/porte_ouverte" />
+
+                    <!--                <CheckBox
+                                    android:text="@string/utile_de_revenir"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/CheckComeBack"
+                                    android:layout_above="@+id/AddDoor"
+                                    android:layout_toEndOf="@+id/streeNumFix"
+                                    android:layout_marginLeft="50dp" />-->
+
+                </RadioGroup>
+
+                <ImageButton
+                    android:id="@+id/menuButtonImage"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/button_menu_shape_default_rounded"
+                    android:contentDescription="@string/menu_utilisateur"
+                    android:padding="20dp"
+                    app:srcCompat="@android:drawable/ic_menu_manage" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="0.95"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                    android:id="@+id/AddDoor"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/button_shape_default_rounded"
+                    android:text="@string/envoyer"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+
+                    app:finalCornerAngle="50dp"
+                    app:initialCornerAngle="50dp"
+                    app:spinning_bar_color="@android:color/black"
+                    app:spinning_bar_width="4dp"
+
+                    />
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</RelativeLayout>

@@ -2,6 +2,7 @@ package fr.jlm2017.pap.MongoDB;
 
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,15 +14,12 @@ public class DataWrapperPortes {
 
         static DataWrapperPortes fromJson(String s) {
             DataWrapperPortes dw = new Gson().fromJson(s, DataWrapperPortes.class);
-            for(BigDataPorte big : dw.data) {
-                big.porte.id_=big._id.$oid;
-            }
             return dw;
         }
 
         public static String IDfromJson(String s){
             BigDataPorte dataWrapper = new Gson().fromJson(s, BigDataPorte.class);
-            return dataWrapper._id.$oid;
+            return dataWrapper.id_;
 
         }
 
@@ -30,9 +28,16 @@ public class DataWrapperPortes {
         }
 
     class BigDataPorte {
-        public Identifier _id = new Identifier();
-        public Porte porte = new Porte("","","","","","",false,0,0,"");
-
+        public String id_ ="";
+        public String adresseResume="";
+        public String numS="";
+        public String numA="";
+        public String complement="";
+        public String nom_rue="";
+        public String nom_ville="";
+        public Boolean ouverte=false;
+        public List<Double> location;
+        public String user_id="";
     }
 
 }

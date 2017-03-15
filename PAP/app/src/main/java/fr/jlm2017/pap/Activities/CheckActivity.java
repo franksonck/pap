@@ -2,6 +2,7 @@ package fr.jlm2017.pap.Activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.support.v4.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,16 +14,18 @@ import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Pair;
 import android.view.KeyEvent;
-import android.view.Menu;
+import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -45,18 +48,20 @@ import fr.jlm2017.pap.MongoDB.Porte;
 import fr.jlm2017.pap.R;
 import fr.jlm2017.pap.utils.ButtonAnimationJLM;
 
+import static android.content.Context.LOCATION_SERVICE;
 
-public class Check extends AppCompatActivity {
+
+public class CheckActivity extends Fragment {
 
     // other variables
     //animation tools 1/////////////////////////
     private Handler handler;
     private int timing ;
     //animation tools 1- end/////////////////////////
-    private String appartNum, formatedFullAdress, app_token, user_id;
+    private String appartNum, formatedFullAdress, user_id,app_token ;
     private String streetNum, streetName, complementAdress, cityName;
     private double latitude, longitude, adressLatitude, adressLongitude;
-    private boolean isAppart, isOpen, numFilled, positionPrecise;
+    private boolean isAppart, isOpen, positionPrecise;
 
     //views variables
     private ImageButton menuImage;
@@ -64,7 +69,9 @@ public class Check extends AppCompatActivity {
     private CircularProgressButton mAddDoor, mGPS;
     private EditText mAdress, mNumS, mNumA, mCity, mComplement;
     private TextInputLayout appartLayout;
-    private CheckBox checkDoorOpen, checkAppart, checkGPS;
+    private CheckBox checkDoorOpen;
+    private CheckBox checkAppart;
+    protected CheckBox checkGPS;
 
     //GPS variables
 
@@ -73,15 +80,14 @@ public class Check extends AppCompatActivity {
 
     // toasts
     public void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
     public void showLongToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     public void initValues () {
-        numFilled = false;
         isOpen = false;
         positionPrecise = false;
         complementAdress = "";
@@ -106,36 +112,34 @@ public class Check extends AppCompatActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        //animation venant de l'activité précédente
-        setupWindowAnimations();
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_check);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.tab_check, container, false);
         handler = new Handler();
         timing = getResources().getInteger(R.integer.decontracting_time_animation);
         //widgets
-        mAddDoor = (CircularProgressButton) findViewById(R.id.AddDoor);
+        mAddDoor = (CircularProgressButton) rootView.findViewById(R.id.AddDoor);
         mAddDoorAnimation = new ButtonAnimationJLM(mAddDoor);
-        mGPS = (CircularProgressButton) findViewById(R.id.GPSButton);
+        mGPS = (CircularProgressButton) rootView.findViewById(R.id.GPSButton);
         mGPSAnimation = new ButtonAnimationJLM(mGPS);
-        mAdress = (EditText) findViewById(R.id.Adress);
-        mNumA = (EditText) findViewById(R.id.DoorNum);
-        appartLayout = (TextInputLayout) findViewById(R.id.DoorNumLayout) ;
-        mNumS = (EditText) findViewById(R.id.StreetNum);
-        mCity = (EditText) findViewById(R.id.Ville);
-        mComplement = (EditText) findViewById(R.id.complement);
-        checkDoorOpen = (CheckBox) findViewById(R.id.CheckOpenDoor);
-        checkAppart = (CheckBox) findViewById(R.id.CheckAppart);
-        checkGPS =  (CheckBox) findViewById(R.id.GPSActive);
-        menuImage = (ImageButton)  findViewById(R.id.menuButtonImage);
+        mAdress = (EditText) rootView.findViewById(R.id.Adress);
+        mNumA = (EditText) rootView.findViewById(R.id.DoorNum);
+        appartLayout = (TextInputLayout) rootView.findViewById(R.id.DoorNumLayout) ;
+        mNumS = (EditText) rootView.findViewById(R.id.StreetNum);
+        mCity = (EditText) rootView.findViewById(R.id.Ville);
+        mComplement = (EditText) rootView.findViewById(R.id.complement);
+        checkDoorOpen = (CheckBox) rootView.findViewById(R.id.CheckOpenDoor);
+        checkAppart = (CheckBox) rootView.findViewById(R.id.CheckAppart);
+        checkGPS =  (CheckBox) rootView.findViewById(R.id.GPSActive);
+        menuImage = (ImageButton)  rootView.findViewById(R.id.menuButtonImage);
         //values
         appartLayout.setAlpha(0);
         mNumA.setEnabled(false);
         isAppart = false;
+        mGPS.setVisibility(View.INVISIBLE);
 
-        app_token = getIntent().getStringExtra("APP_TOKEN");
-        user_id = getIntent().getStringExtra("USER_ID");
+        user_id = ((Main) getActivity()).user_id;
+        app_token = ((Main) getActivity()).app_token;
 
         //GPS
         GPSInit();
@@ -144,38 +148,24 @@ public class Check extends AppCompatActivity {
         //events
         addAttemptListener();
         UIListeners();
-    }
 
-    private void setupWindowAnimations() { // TODO animations de transitions
-/*        getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
-        Fade fade = new Fade();
-        fade.setDuration(getResources().getInteger(R.integer.transition_time_between_activites_fade));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setEnterTransition(fade);
-        }*/
+        return rootView;
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    public void onPause() {
+        super.onPause();
+        checkGPS.setChecked(false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         //if(user.pseudo.equals("")) dialogFirstConnection();
         initValues();
         resetUI();
         checkGPS.setChecked(false);
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //if(!user.pseudo.equals(""))checkGPS.setChecked(true);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        checkGPS.setChecked(false);
-    }
-
 
     // MAIN USE
 
@@ -414,41 +404,19 @@ public class Check extends AppCompatActivity {
                     }
                 }, timing);
                 //animation tools 2-end/////////////////////////
+
+                //on actualise l'affichage dans le Fragement de maps
+                final Intent intent = new Intent("DATA_ACTION");
+                intent.putExtra("DATA_EXTRA", porte);
+                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
             }
         };
         saveDoor.execute(Pair.create(porte,app_token));
     }
 
-    //MENU
-
-    private Menu m = null;
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) // creation du menu
-    {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_admin, menu);
-        m = menu;
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected (MenuItem item) // options du menu
-    {
-        switch(item.getItemId())
-        {
-            case R.id.logout:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    //MENUFIN//
-
     //GPS//
     private void GPSInit() {
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
@@ -461,6 +429,8 @@ public class Check extends AppCompatActivity {
                     // on résactive l'envoi
                     setEnabledButton(mAddDoor,R.string.envoyer ,R.drawable.button_shape_default_rounded ,true);
                     setEnabledButton(mGPS,R.string.gps_use ,R.drawable.button_shape_default_rounded ,true);
+
+
                 }
                 else {
                     if(mGPS.isClickable()) {
@@ -474,6 +444,13 @@ public class Check extends AppCompatActivity {
                         }
                     }
                 }
+
+                //on actualise l'affichage dans le Fragement de maps dans tous les cas
+                final Intent intent = new Intent("DATA_MAJ");
+                intent.putExtra("latitude", latitude);
+                intent.putExtra("longitude", longitude);
+                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+
             }
 
             @Override
@@ -512,6 +489,10 @@ public class Check extends AppCompatActivity {
                     setEnabledButton(mGPS,R.string.attente ,R.drawable.button_cancel_shape_default_rounded ,false);
                     locationManager.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, locationListener, null);
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,5000,30,locationListener);
+                    //on vide les cases qui doivent être remplies par GPS
+                    mNumS.setText("");
+                    mAdress.setText("");
+                    mCity.setText("");
                 }
                 else {      // si on décoche GPS, on arrete les updates et on cache le bouton. L'envoi est activé
                     locationManager.removeUpdates(locationListener);
@@ -569,6 +550,12 @@ public class Check extends AppCompatActivity {
                                     adressLatitude=data.geometry.lat;
                                     adressLongitude=data.geometry.lng;
                                     formatedFullAdress=data.formatted;
+
+                                    //on actualise l'affichage dans le Fragement de maps dans tous les cas // TODO Remove, only to test from abroad
+                                    final Intent intent = new Intent("DATA_MAJ");
+                                    intent.putExtra("latitude", adressLatitude);
+                                    intent.putExtra("longitude", adressLongitude);
+                                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                                 }
                             }, timing);
                         }
@@ -594,6 +581,13 @@ public class Check extends AppCompatActivity {
                                     adressLatitude=selected.geometry.lat;
                                     adressLongitude=selected.geometry.lng;
                                     formatedFullAdress=selected.formatted;
+
+                                    //on actualise l'affichage dans le Fragement de maps dans tous les cas // TODO Remove, only to test from abroad
+                                    final Intent intent = new Intent("DATA_MAJ");
+                                    intent.putExtra("latitude", adressLatitude);
+                                    intent.putExtra("longitude", adressLongitude);
+                                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
+
                                     dialogInterface.cancel();
                                 }
                             });
@@ -708,7 +702,7 @@ public class Check extends AppCompatActivity {
                         switch(item.getItemId())
                         {
                             case R.id.logout:
-                                finish();
+                                getActivity().finish();
                                 return true;
                         }
                         return true;
