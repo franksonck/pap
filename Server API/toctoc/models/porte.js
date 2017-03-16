@@ -1,17 +1,20 @@
-var mongoose     = require('mongoose');
-var Schema       = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const ObjectId = Schema.ObjectId;
 
-var porteSchema   = new Schema({
-    adresseResume: String,
-	complement: String,
-	nom_rue: String,
-	nom_ville: String,
-    numS: String,
-	numA: String,
-    ouverte: Boolean,
-	user_id: String,
-	location: {
+const Porte = new Schema({
+  adresseResume: String,
+  complement: String,
+  nom_rue: String,
+  nom_ville: String,
+  numS: String,
+  numA: String,
+  ouverte: Boolean,
+  location: {
       type: [Number],
-      index: '2d'}
-	});
-module.exports = mongoose.model('Porte', porteSchema);
+      index: '2d'},
+  person: ObjectId,
+  device: ObjectId
+});
+
+module.exports = mongoose.model('Porte', Porte);

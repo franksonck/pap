@@ -1,8 +1,10 @@
-var express = require('express');
+const express = require('express');
 
 // Get the router
-var router = express.Router();
-var Porte = require ('./models/porte.js');
+const router = express.Router();
+const Porte = require ('./models/porte.js');
+const controllers = require('./controllers');
+const auth = require('./auth');
 // Middleware for all this routers requests
 router.use(function timeLog(req, res, next) {
   console.log('Request Received: ', dateDisplayed(Date.now()));
@@ -23,10 +25,6 @@ router.route('/portes').get (function (req,res) {
   });
 });
 
-router.route('/verifier').get (function (req,res) {
-    res.send ("fail");
-});
-
 router.route('/portes').post (function (req,res) {
   var porte           	= new Porte();
   porte.adresseResume	= req.body.porte.adresseResume;
@@ -36,7 +34,7 @@ router.route('/portes').post (function (req,res) {
   porte.numS        	= req.body.porte.numS;
   porte.numA        	= req.body.porte.numA;
   porte.ouverte       	= req.body.porte.ouverte;
-  porte.user_id			=req.body.porte.user_id;
+  porte.person			=req.body.porte.person;
   porte.location      = [req.body.porte.latitude, req.body.porte.longitude];
 
   porte.save(function(err) {
@@ -55,7 +53,7 @@ router.route('/portes/:porte_id').get(function(req,res){
 });
 
 router.route('/user_porte').get(function(req,res){
-    Porte.find({user_id: req.query.user_id}).exec(function(err, locations){
+    Porte.find({person: req.query.person}).exec(function(err, locations){
                   if (err)
                     res.status(500).send(err);
                   res.status(200).json(locations);
@@ -92,7 +90,7 @@ router.route('/portes/:porte_id').put(function(req,res){
 	  porte.numA        	= req.body.porte.numA;
 	  porte.ouverte       	= req.body.porte.ouverte;
       porte.location      = [req.body.porte.latitude, req.body.porte.longitude];
-	  porte.user_id			=req.body.porte.user_id;
+	  porte.person			=req.body.porte.person;
       porte.save(function (err){
         if (err)
           res.send(err);
@@ -108,6 +106,15 @@ router.route('/portes/:porte_id').delete(function(req,res){
     res.json({message: 'porte supprimee avec succes'});
   });
 });
+
+router.get('/connexion/', controllers.associateDevice);
+router.get('/connexion/aller', auth.connect);
+router.get('/connexion/retour', auth.oauthCallback);
+
+
+router.get('/deconnexion/', auth.disconnect);
+
+router.get('/verifier', auth.verify);
 
 module.exports = router;
 
