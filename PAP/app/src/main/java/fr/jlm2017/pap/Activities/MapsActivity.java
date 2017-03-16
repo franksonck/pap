@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,11 +24,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 
@@ -34,18 +35,20 @@ import fr.jlm2017.pap.MongoDB.MapsMarkersAsyncTask;
 import fr.jlm2017.pap.MongoDB.Porte;
 import fr.jlm2017.pap.MongoDB.myDoorsAsyncTask;
 import fr.jlm2017.pap.R;
+import fr.jlm2017.pap.utils.MyMapMarker;
+import fr.jlm2017.pap.utils.MyMarkerRenderer;
 
 public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private ArrayList<Marker> markersClose,markersUser;
-    private ArrayList<MarkerOptions> markersCloseOptn, markersUserOptn;
+    private ArrayList<MyMapMarker> markersClose,markersUser;
     private double latitudeCam, longitudeCam;
     private String app_token, user_id;
     private boolean rdy=false;
     private float zoomMax, zoomFR, zoom;
     private int nb_doors_user = 0;
     private TextView number;
+    private ClusterManager<MyMapMarker> mClusterManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,9 +57,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         app_token=((Main) getActivity()).app_token;
         user_id=((Main) getActivity()).user_id;
         markersClose = new ArrayList<>();
-        markersCloseOptn = new ArrayList<>();
         markersUser = new ArrayList<>();
-        markersUserOptn = new ArrayList<>();
         latitudeCam=46.258451;
         longitudeCam=2.213055;
         zoomFR = 5.0f;
@@ -149,9 +150,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         rdy=true;
-        // Add a marker in Sydney and move the camera
-        for(MarkerOptions m : markersCloseOptn) {
-           markersClose.add (mMap.addMarker(m));
+        setUpClusterer();
+        // si des markers ont deja été ajoutés, avant que la carte soit initialisée, on les traite
+        for(MyMapMarker m : markersClose) {
+            mClusterManager.addItem(m);
+        }
+        for(MyMapMarker m : markersUser) {
+            mClusterManager.addItem(m);
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitudeCam, longitudeCam),zoom));//on se place au centre de la France
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -160,11 +165,55 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    private void setUpClusterer() {
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<>(getContext(), mMap);
+        mClusterManager.setRenderer(new MyMarkerRenderer(getContext(),mMap,mClusterManager));
+        mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MyMapMarker>() {
+            @Override
+            public boolean onClusterClick(Cluster<MyMapMarker> cluster) {
+                if(mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
+                    //si zoom max, on ouvre un pop up avec les différents titres cliquables TODO
+                }
+                else {
+                    // sinon on zoom jusqu'à déclusteriser TODO
+                    double nord=10000,sud=0,est=0,ouest=0;
+                    for (MyMapMarker m : cluster.getItems()){
+                        LatLng pos = m.getPosition();
+                        if(nord==10000) {
+                            nord= pos.latitude;
+                            sud= pos.latitude;
+                            est = pos.longitude;
+                            ouest=pos.longitude;
+                        }
+                        else {
+                            if(pos.latitude>nord) nord = pos.latitude;
+                            if(pos.latitude<sud) sud = pos.latitude;
+                            if(pos.longitude>est) est = pos.longitude;
+                            if(pos.longitude<ouest) ouest = pos.longitude;
+                        }
+                    }
+                    //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(sud,ouest),new LatLng(nord,est)),1));
+                    //mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(new LatLng(sud,ouest),new LatLng(nord,est)));
+                }
+                return false;
+            }
+        });
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+    }
+
     public void UpdateMarkarList (double lat, double lng) {
         latitudeCam=lat;
         longitudeCam=lng;
         zoom=zoomMax;
-        EmptyMarkers(markersClose,markersCloseOptn);
+        EmptyMarkers(markersClose);
         MapsMarkersAsyncTask tsk = new MapsMarkersAsyncTask() {
             @Override
             public void onResponseReceived(Pair<ArrayList<Porte>, Boolean> result) {
@@ -183,17 +232,18 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         tsk.execute(Pair.create(Pair.create(lat,lng),app_token));
     }
 
-    private void EmptyMarkers(ArrayList<Marker> markersClos,ArrayList<MarkerOptions> markersCloseOpt) {
-        for(Marker m : markersClos) {
-            m.remove();
+    private void EmptyMarkers(ArrayList<MyMapMarker> markersClos) {
+        if(rdy) {
+            for (MyMapMarker m : markersClos) {
+                mClusterManager.removeItem(m);
+            }
         }
         markersClos.clear();
-        markersCloseOpt.clear();
     }
 
     public void UpdateMarkarListUser () {
         nb_doors_user=0;
-        EmptyMarkers(markersUser,markersUserOptn);
+        EmptyMarkers(markersUser);
         myDoorsAsyncTask tskuser = new myDoorsAsyncTask() {
             @Override
             public void onResponseReceived(Pair<ArrayList<Porte>, Boolean> result) {
@@ -214,26 +264,18 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     }
 
     private void addMarker(Porte p) {
-        BitmapDescriptor btm ;
-        if(p.ouverte) btm = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-        else btm= BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-        MarkerOptions m = new MarkerOptions().position(new LatLng(p.latitude, p.longitude)).title(p.adresseResume)
-                .icon(btm);
-        markersCloseOptn.add(m);
+        MyMapMarker mrk = new MyMapMarker(p);
+        markersClose.add(mrk);
         if(rdy) {
-            markersClose.add(mMap.addMarker(m));
+            mClusterManager.addItem(mrk);
         }
     }
 
     private void addUserMarker(Porte p) {
-        BitmapDescriptor btm ;
-        if(p.ouverte) btm = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-        else btm= BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-        MarkerOptions m = new MarkerOptions().position(new LatLng(p.latitude, p.longitude)).title(p.adresseResume)
-                .icon(btm);
-        markersUserOptn.add(m);
+        MyMapMarker mrk = new MyMapMarker(p);
+        markersUser.add(mrk);
         if(rdy) {
-            markersUser.add(mMap.addMarker(m));
+            mClusterManager.addItem(mrk);
         }
     }
 }

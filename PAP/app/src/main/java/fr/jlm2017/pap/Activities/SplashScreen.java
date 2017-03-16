@@ -70,7 +70,7 @@ public class SplashScreen extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode==BACK_FROM_WEB) {
            if(resultCode == RESULT_OK) {
-               Intent goCheck = new Intent(getApplicationContext(),CheckActivity.class);
+               Intent goCheck = new Intent(getApplicationContext(),Main.class);
                goCheck.putExtra("APP_TOKEN", token);
                goCheck.putExtra("USER_ID", data.getStringExtra("USER_ID"));
                startActivity(goCheck);

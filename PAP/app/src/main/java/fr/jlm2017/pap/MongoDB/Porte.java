@@ -35,6 +35,7 @@ public class Porte implements Parcelable {
     }
 
     public Porte(DataWrapperPortes.BigDataPorte big) {
+        this.id_=big.id_;
         this.adresseResume = big.adresseResume;
         this.numS = big.numS;
         this.numA = big.numA;
@@ -80,7 +81,6 @@ public class Porte implements Parcelable {
         dest.writeString(String.valueOf(latitude));
         dest.writeString(String.valueOf(longitude));
         dest.writeString(String.valueOf(ouverte));
-        dest.writeString(id_);
     }
 
     public static final Parcelable.Creator<Porte> CREATOR = new Parcelable.Creator<Porte>() {
@@ -107,6 +107,5 @@ public class Porte implements Parcelable {
         latitude= Double.parseDouble(in.readString());
         longitude=Double.parseDouble(in.readString());
         ouverte=Boolean.parseBoolean(in.readString());
-        id_ = in.readString();
     }
 }
