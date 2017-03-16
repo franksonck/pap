@@ -67,7 +67,7 @@ public class QueryBuilder {
     }
 
     public String buildGetMyPorteURL(String first) {
-        return getBaseUrl()+"user_porte/?user_id="+first;
+        return getBaseUrl()+"user_porte/?person="+first;
     }
 }
 

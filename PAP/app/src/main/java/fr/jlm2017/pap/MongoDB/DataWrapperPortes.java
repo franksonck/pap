@@ -37,7 +37,7 @@ public class DataWrapperPortes {
         public String nom_ville="";
         public Boolean ouverte=false;
         public List<Double> location;
-        public String user_id="";
+        public String person="";
     }
 
 }

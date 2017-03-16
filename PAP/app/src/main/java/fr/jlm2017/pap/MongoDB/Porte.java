@@ -45,7 +45,7 @@ public class Porte implements Parcelable {
         this.ouverte = big.ouverte;
         this.latitude = big.location.get(0);
         this.longitude = big.location.get(1);
-        this.user_id = big.user_id;
+        this.user_id = big.person;
     }
 
     @Override
