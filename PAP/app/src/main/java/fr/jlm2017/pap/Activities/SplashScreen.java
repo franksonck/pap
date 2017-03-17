@@ -2,11 +2,13 @@ package fr.jlm2017.pap.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Pair;
 
+import fr.jlm2017.pap.MongoDB.QueryBuilder;
 import fr.jlm2017.pap.R;
 import fr.jlm2017.pap.utils.Encoder;
 import fr.jlm2017.pap.MongoDB.OAuthAsyncTask;
@@ -57,8 +59,8 @@ public class SplashScreen extends AppCompatActivity {
                     finish();
                 }
                 else {
-                    Intent goWeb = new Intent(getApplicationContext(),WebAuthActivity.class);
-                    goWeb.putExtra("APP_TOKEN", token);
+                    QueryBuilder qb = new QueryBuilder();
+                    Intent goWeb = new Intent(Intent.ACTION_VIEW, Uri.parse(qb.buildConnexionURL(token)));
                     startActivityForResult(goWeb,BACK_FROM_WEB);
                 }
             }

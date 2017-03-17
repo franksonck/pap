@@ -36,11 +36,15 @@
             android:name=".Activities.SplashScreen"
             android:label="@string/title_activity_splash_screen"
             android:screenOrientation="portrait"
+            android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <data android:scheme="jlmpap" />
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>
         <!--

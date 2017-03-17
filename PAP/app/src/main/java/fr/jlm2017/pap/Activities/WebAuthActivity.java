@@ -10,6 +10,7 @@ import android.webkit.WebViewClient;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.jlm2017.pap.MongoDB.QueryBuilder;
 import fr.jlm2017.pap.R;
 
 public class WebAuthActivity extends AppCompatActivity {
@@ -57,8 +58,8 @@ public class WebAuthActivity extends AppCompatActivity {
 
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization",  "Bearer " + app_token);
-        web_page.loadUrl(getResources().getString(R.string.connectionURL),headers);
+        headers.put("device",app_token);
+        web_page.loadUrl(new QueryBuilder().buildConnexionTokenHeaderURL(),headers);
     }
 
     /**

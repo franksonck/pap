@@ -38,7 +38,8 @@ config.clientSecret = 'secret1';
 // the redirect URL that will be used during the OAuth2 process
 // you cannot change these values unilaterally: they must be whitelisted by
 // the jlm2017 team for security reasons
-config.redirectBase = 'http://localhost:8000';
+config.redirectBase = 'http://192.168.10.102:8000';
+//config.redirectBase = 'http://localhost:8000';
 config.redirectPath = '/connexion/retour';
 
 config.redirectURL = config.redirectBase + config.redirectPath;

@@ -28,7 +28,7 @@ public class QueryBuilder {
      */
     private String getBaseUrl()
     {
-        return "http://192.168.10.102:8080/";
+        return "http://192.168.10.102:8000/";
     }
 
 
@@ -68,6 +68,13 @@ public class QueryBuilder {
 
     public String buildGetMyPorteURL(String first) {
         return getBaseUrl()+"user_porte/?person="+first;
+    }
+
+    public String buildConnexionURL(String token) {
+        return getBaseUrl()+"connexion/?device="+token;
+    }
+    public String buildConnexionTokenHeaderURL() {
+        return getBaseUrl()+"connexion/";
     }
 }
 
