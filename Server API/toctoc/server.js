@@ -19,8 +19,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/JLMPaP');
  });
 */
 
+const logger = morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] - :req[authorization]');
+
 // set up logging
-app.use(morgan('combined'));
+app.use(logger);
 
 // express app will use body-parser to get data from POST
 app.use(bodyParser.urlencoded({extended: true}));
