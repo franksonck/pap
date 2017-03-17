@@ -429,8 +429,11 @@ public class CheckActivity extends Fragment {
                     // on résactive l'envoi
                     setEnabledButton(mAddDoor,R.string.envoyer ,R.drawable.button_shape_default_rounded ,true);
                     setEnabledButton(mGPS,R.string.gps_use ,R.drawable.button_shape_default_rounded ,true);
-
-
+                    //on actualise l'affichage dans le Fragement de maps dans tous les cas
+                    final Intent intent = new Intent("DATA_MAJ");
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("longitude", longitude);
+                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                 }
                 else {
                     if(mGPS.isClickable()) {
@@ -445,11 +448,6 @@ public class CheckActivity extends Fragment {
                     }
                 }
 
-                //on actualise l'affichage dans le Fragement de maps dans tous les cas
-                final Intent intent = new Intent("DATA_MAJ");
-                intent.putExtra("latitude", latitude);
-                intent.putExtra("longitude", longitude);
-                LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 
             }
 
@@ -550,12 +548,6 @@ public class CheckActivity extends Fragment {
                                     adressLatitude=data.geometry.lat;
                                     adressLongitude=data.geometry.lng;
                                     formatedFullAdress=data.formatted;
-
-                                    //on actualise l'affichage dans le Fragement de maps dans tous les cas // TODO Remove, only to test from abroad
-                                    final Intent intent = new Intent("DATA_MAJ");
-                                    intent.putExtra("latitude", adressLatitude);
-                                    intent.putExtra("longitude", adressLongitude);
-                                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
                                 }
                             }, timing);
                         }
@@ -581,12 +573,6 @@ public class CheckActivity extends Fragment {
                                     adressLatitude=selected.geometry.lat;
                                     adressLongitude=selected.geometry.lng;
                                     formatedFullAdress=selected.formatted;
-
-                                    //on actualise l'affichage dans le Fragement de maps dans tous les cas // TODO Remove, only to test from abroad
-                                    final Intent intent = new Intent("DATA_MAJ");
-                                    intent.putExtra("latitude", adressLatitude);
-                                    intent.putExtra("longitude", adressLongitude);
-                                    LocalBroadcastManager.getInstance(getActivity()).sendBroadcast(intent);
 
                                     dialogInterface.cancel();
                                 }

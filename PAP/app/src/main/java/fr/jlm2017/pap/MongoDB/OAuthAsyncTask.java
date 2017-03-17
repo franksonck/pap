@@ -13,23 +13,30 @@ import okhttp3.Response;
  * Created by thoma on 12/03/2017.
  * Project : Porte à Porte pour JLM2017
  */
-public abstract class OAuthAsyncTask extends AsyncTask<String, Void, Pair<String, Boolean>> implements InterfaceReceivedData<Pair<String, Boolean>> {
+public abstract class OAuthAsyncTask extends AsyncTask<String, Void, Pair<User, Boolean>> implements InterfaceReceivedData<Pair<User, Boolean>> {
 
     public OkHttpClient client;
 
     @Override
-    protected final Pair<String, Boolean> doInBackground(String... arg0) {
+    protected final Pair<User, Boolean> doInBackground(String... arg0) {
 
         String token = arg0[0];
         QueryBuilder qb = new QueryBuilder();
         // request with Token
         client = new OkHttpClient();
-        Pair<String, Boolean> result = Pair.create("",false);
+        Pair<String, Boolean> response = Pair.create("",false);
         try {
             String URL = qb.buildOAuthURL();
-            result = getFromDB(URL,token);
+            response = getFromDB(URL,token);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        Pair<User, Boolean> result;
+        if(response.second) {
+            result = Pair.create(User.fromJson(response.first),response.second);
+        }
+        else {
+            result = Pair.create(new User(),response.second);
         }
 
         return result;
@@ -50,7 +57,7 @@ public abstract class OAuthAsyncTask extends AsyncTask<String, Void, Pair<String
     }
 
     @Override
-    protected void onPostExecute(Pair<String, Boolean> pair) {
+    protected void onPostExecute(Pair<User, Boolean> pair) {
         onResponseReceived(pair);
     }
 }

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -31,10 +32,12 @@ import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.MongoDB.MapsMarkersAsyncTask;
 import fr.jlm2017.pap.MongoDB.Porte;
 import fr.jlm2017.pap.MongoDB.myDoorsAsyncTask;
 import fr.jlm2017.pap.R;
+import fr.jlm2017.pap.utils.ButtonAnimationJLM;
 import fr.jlm2017.pap.utils.MyMapMarker;
 import fr.jlm2017.pap.utils.MyMarkerRenderer;
 
@@ -46,16 +49,29 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     private String app_token, user_id;
     private boolean rdy=false;
     private float zoomMax, zoomFR, zoom;
-    private int nb_doors_user = 0;
+    private int nb_doors_user = 0,timing;
     private TextView number;
     private ClusterManager<MyMapMarker> mClusterManager;
+    private CircularProgressButton mRefresh;
+    private ButtonAnimationJLM mRefreshAnimation;
+    private Handler handler;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab_map, container, false);
+        //Animations tools for refresh Button
+        mRefresh = (CircularProgressButton) rootView.findViewById(R.id.refresh_button);
+        mRefreshAnimation = new ButtonAnimationJLM(mRefresh);
+        mRefresh.setVisibility(View.INVISIBLE);
+        mRefresh.setEnabled(false);
+        handler = new Handler();
+        timing = getResources().getInteger(R.integer.decontracting_time_animation);
+        //ids
         app_token=((Main) getActivity()).app_token;
         user_id=((Main) getActivity()).user_id;
+        //markers
         markersClose = new ArrayList<>();
         markersUser = new ArrayList<>();
         latitudeCam=46.258451;
@@ -68,6 +84,13 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         number = (TextView) rootView.findViewById(R.id.user_doors);
         UpdateMarkarListUser();
         number.setText(String.valueOf(nb_doors_user));
+
+        mRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               UpdateMarkarList(latitudeCam,longitudeCam);
+            }
+        });
         return rootView;
     }
 
@@ -77,33 +100,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         MapFragment fragment = (MapFragment) getActivity().getFragmentManager().findFragmentById(R.id.map);
         fragment.getMapAsync(this);
     }
-
-    // reception du Broadcaster si on vient d'ajouter un militant dans l'autre Fragment
-
-    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            if ("DATA_ACTION".equals(intent.getAction()))
-            {
-                Porte port  = intent.getParcelableExtra("DATA_EXTRA");
-                addUserMarker(port);
-                nb_doors_user++;
-                number.setText(String.valueOf(nb_doors_user));
-                zoom=zoomMax;
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(port.latitude, port.longitude),zoom));
-//                //System.out.println("ID caché : "+mili.id_);
-            }
-            if ("DATA_MAJ".equals(intent.getAction()))
-            {
-                double latitude  = intent.getDoubleExtra("latitude",0);
-                double longitude  = intent.getDoubleExtra("longitude",0);
-                UpdateMarkarList(latitude,longitude);
-//                //System.out.println("ID caché : "+mili.id_);
-            }
-        }
-    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -163,6 +159,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
         }
+        mRefresh.setVisibility(View.VISIBLE);
     }
 
     private void setUpClusterer() {
@@ -210,22 +207,41 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     }
 
     public void UpdateMarkarList (double lat, double lng) {
+        mRefresh.setEnabled(true);
         latitudeCam=lat;
         longitudeCam=lng;
         zoom=zoomMax;
         EmptyMarkers(markersClose);
+        mRefresh.startAnimation();
+
         MapsMarkersAsyncTask tsk = new MapsMarkersAsyncTask() {
             @Override
-            public void onResponseReceived(Pair<ArrayList<Porte>, Boolean> result) {
+            public void onResponseReceived(final Pair<ArrayList<Porte>, Boolean> result) {
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitudeCam, longitudeCam),zoom));
                 if(result.second) {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitudeCam, longitudeCam),zoom));
-                    for(Porte p : result.first) {
-                        if(!p.user_id.equals(user_id)) addMarker(p);
-                    }
+                    mRefreshAnimation.OKButtonAndRevertAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for(Porte p : result.first) {
+                                if(!p.user_id.equals(user_id)) addMarker(p);
+                            }
+                            mRefresh.setText("MAJ");
+                        }
+                    }, timing);
+
                 }
                 else {
-                    Toast.makeText(getActivity(), "échec de récupération des proches", Toast.LENGTH_LONG).show();
-                    System.out.println("échec de récupération des proches");
+                    mRefreshAnimation.WrongButtonAnimation();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "échec de récupération des proches", Toast.LENGTH_LONG).show();
+                            System.out.println("échec de récupération des proches");
+                            mRefresh.setText("MAJ");
+                        }
+                    }, timing);
+
                 }
             }
         };
@@ -278,4 +294,32 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             mClusterManager.addItem(mrk);
         }
     }
+
+    // reception du Broadcaster si on vient d'ajouter une porte dans l'autre Fragment
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if ("DATA_ACTION".equals(intent.getAction()))
+            {
+                Porte port  = intent.getParcelableExtra("DATA_EXTRA");
+                addUserMarker(port);
+                nb_doors_user++;
+                number.setText(String.valueOf(nb_doors_user));
+                zoom=zoomMax;
+                UpdateMarkarList(port.latitude,port.longitude);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(port.latitude, port.longitude),zoom));
+//                //System.out.println("ID caché : "+mili.id_);
+            }
+            if ("DATA_MAJ".equals(intent.getAction()))
+            {
+                double latitude  = intent.getDoubleExtra("latitude",0);
+                double longitude  = intent.getDoubleExtra("longitude",0);
+                UpdateMarkarList(latitude,longitude);
+//                //System.out.println("ID caché : "+mili.id_);
+            }
+        }
+    };
 }

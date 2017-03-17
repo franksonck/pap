@@ -1,39 +1,61 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="fr.jlm2017.pap.Activities.Main"
     android:paddingBottom="@dimen/activity_vertical_margin_tabbed"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:weightSum="1">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="5dp">
 
         <TextView
             android:id="@+id/user_doors_fix"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="20dp"
             android:text="Nombre de portes que j'ai toquées :"
-            android:layout_weight="0.08" />
+            android:layout_weight="1.2" />
 
         <TextView
             android:id="@+id/user_doors"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:layout_weight="1"
+            android:layout_weight="3.5"
             android:text="1" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:layout_gravity="center"
+                android:background="@drawable/button_shape_default_rounded"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:id="@+id/refresh_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/maj_proches"
+                app:finalCornerAngle="50dp"
+                app:initialCornerAngle="50dp"
+                app:spinning_bar_color="@android:color/black"
+                app:spinning_bar_width="4dp" />
+            </LinearLayout>
     </LinearLayout>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:name="com.google.android.gms.maps.MapFragment"
         android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="400dp" />
 
 </LinearLayout>

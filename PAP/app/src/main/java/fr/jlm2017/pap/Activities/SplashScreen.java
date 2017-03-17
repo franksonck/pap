@@ -7,8 +7,10 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Pair;
+import android.widget.Toast;
 
 import fr.jlm2017.pap.MongoDB.QueryBuilder;
+import fr.jlm2017.pap.MongoDB.User;
 import fr.jlm2017.pap.R;
 import fr.jlm2017.pap.utils.Encoder;
 import fr.jlm2017.pap.MongoDB.OAuthAsyncTask;
@@ -29,7 +31,8 @@ public class SplashScreen extends AppCompatActivity {
                     sleep(SPLASH_SCREEN_TIME);
                     // app token generation
                     SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                    token = shared.getString(SavedAppTokenPreference, "");
+                    //token = shared.getString(SavedAppTokenPreference, ""); TODO Uncomment
+                    token="";
                     if(token.equals("")) {
                         SharedPreferences.Editor editor = shared.edit();
                         token = new Encoder.RandomString(32).nextString();
@@ -50,11 +53,12 @@ public class SplashScreen extends AppCompatActivity {
     private void DoOAuth(final String token) {
         OAuthAsyncTask tsk = new OAuthAsyncTask() {
             @Override
-            public void onResponseReceived(Pair<String, Boolean> result) {
+            public void onResponseReceived(Pair<User, Boolean> result) {
                 if(result.second){
                     Intent goCheck = new Intent(getApplicationContext(),Main.class);
                     goCheck.putExtra("APP_TOKEN", token);
-                    goCheck.putExtra("USER_ID", "toto");
+                    goCheck.putExtra("USER_ID", result.first._id);
+                    Toast.makeText(getBaseContext(),"Bienvenue à toi, "+result.first.first_name + " "+result.first.last_name + ", allons militer !",Toast.LENGTH_LONG).show();
                     startActivity(goCheck);
                     finish();
                 }
