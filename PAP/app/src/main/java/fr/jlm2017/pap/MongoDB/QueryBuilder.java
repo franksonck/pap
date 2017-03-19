@@ -24,7 +24,8 @@ public class QueryBuilder {
      */
     private String getBaseUrl()
     {
-        return "http://192.168.10.102:8000/";
+        return "https://pap.jlm2017.fr/";
+        //return "http://192.168.10.102:8000/";
     }
 
 
