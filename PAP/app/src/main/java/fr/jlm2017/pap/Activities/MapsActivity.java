@@ -1,13 +1,13 @@
 package fr.jlm2017.pap.Activities;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -18,6 +18,8 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,13 +33,13 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
-
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import fr.jlm2017.pap.MongoDB.MapsMarkersAsyncTask;
 import fr.jlm2017.pap.MongoDB.Porte;
 import fr.jlm2017.pap.MongoDB.myDoorsAsyncTask;
 import fr.jlm2017.pap.R;
 import fr.jlm2017.pap.utils.ButtonAnimationJLM;
+import fr.jlm2017.pap.utils.MathTool;
 import fr.jlm2017.pap.utils.MyMapMarker;
 import fr.jlm2017.pap.utils.MyMarkerRenderer;
 
@@ -88,7 +90,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         mRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               UpdateMarkarList(latitudeCam,longitudeCam);
+               UpdateMarkarList(latitudeCam,longitudeCam,zoom);
             }
         });
         return rootView;
@@ -145,6 +147,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setMaxZoomPreference(zoomMax);
         rdy=true;
         setUpClusterer();
         // si des markers ont deja été ajoutés, avant que la carte soit initialisée, on les traite
@@ -155,11 +158,6 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             mClusterManager.addItem(m);
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitudeCam, longitudeCam),zoom));//on se place au centre de la France
-        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        }
-        mRefresh.setVisibility(View.VISIBLE);
     }
 
     private void setUpClusterer() {
@@ -171,31 +169,36 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
         mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<MyMapMarker>() {
             @Override
             public boolean onClusterClick(Cluster<MyMapMarker> cluster) {
-                if(mMap.getCameraPosition().zoom == mMap.getMaxZoomLevel()) {
-                    //si zoom max, on ouvre un pop up avec les différents titres cliquables TODO
+                if(mMap.getCameraPosition().zoom == zoomMax) {
+                    //si zoom max, on ouvre un pop up avec les différents titres cliquables
+                    ArrayList<MyMapMarker> arr= new ArrayList<MyMapMarker>();
+                    for(MyMapMarker m : cluster.getItems()) {
+                        arr.add(m);
+                    }
+                    MyMapsAdapter  adapter = new MyMapsAdapter(getContext(),arr);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.maps_dialog_title);
+                    builder.setCancelable(true);
+                    builder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+                    final AlertDialog box = builder.create();
+                    box.show();
                 }
                 else {
-                    // sinon on zoom jusqu'à déclusteriser TODO
-                    double nord=10000,sud=0,est=0,ouest=0;
-                    for (MyMapMarker m : cluster.getItems()){
-                        LatLng pos = m.getPosition();
-                        if(nord==10000) {
-                            nord= pos.latitude;
-                            sud= pos.latitude;
-                            est = pos.longitude;
-                            ouest=pos.longitude;
-                        }
-                        else {
-                            if(pos.latitude>nord) nord = pos.latitude;
-                            if(pos.latitude<sud) sud = pos.latitude;
-                            if(pos.longitude>est) est = pos.longitude;
-                            if(pos.longitude<ouest) ouest = pos.longitude;
-                        }
+                    // sinon on zoom jusqu'à déclusteriser
+
+                    LatLngBounds.Builder builder = LatLngBounds.builder();
+                    for (MyMapMarker item : cluster.getItems()) {
+                        builder.include(item.getPosition());
                     }
-                    //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(sud,ouest),new LatLng(nord,est)),1));
-                    //mMap.setLatLngBoundsForCameraTarget(new LatLngBounds(new LatLng(sud,ouest),new LatLng(nord,est)));
+                    final LatLngBounds bounds = builder.build();
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
                 }
-                return false;
+                return true;
             }
         });
         // Point the map's listeners at the listeners implemented by the cluster
@@ -206,11 +209,12 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
 
     }
 
-    public void UpdateMarkarList (double lat, double lng) {
+    public void UpdateMarkarList (double lat, double lng, float zoomB) {
         mRefresh.setEnabled(true);
+        mRefresh.setVisibility(View.VISIBLE);
         latitudeCam=lat;
         longitudeCam=lng;
-        zoom=zoomMax;
+        zoom=zoomB;
         EmptyMarkers(markersClose);
         mRefresh.startAnimation();
 
@@ -226,7 +230,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                             for(Porte p : result.first) {
                                 if(!p.user_id.equals(user_id)) addMarker(p);
                             }
-                            mRefresh.setText("MAJ");
+                            mRefresh.setText(getResources().getString(R.string.maj_proches));
                         }
                     }, timing);
 
@@ -280,7 +284,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     }
 
     private void addMarker(Porte p) {
-        MyMapMarker mrk = new MyMapMarker(p);
+        MyMapMarker mrk = new MyMapMarker(getContext(),p);
         markersClose.add(mrk);
         if(rdy) {
             mClusterManager.addItem(mrk);
@@ -288,7 +292,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
     }
 
     private void addUserMarker(Porte p) {
-        MyMapMarker mrk = new MyMapMarker(p);
+        MyMapMarker mrk = new MyMapMarker(getContext(),p);
         markersUser.add(mrk);
         if(rdy) {
             mClusterManager.addItem(mrk);
@@ -308,8 +312,7 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
                 addUserMarker(port);
                 nb_doors_user++;
                 number.setText(String.valueOf(nb_doors_user));
-                zoom=zoomMax;
-                UpdateMarkarList(port.latitude,port.longitude);
+                UpdateMarkarList(port.latitude,port.longitude,zoomMax);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(port.latitude, port.longitude),zoom));
 //                //System.out.println("ID caché : "+mili.id_);
             }
@@ -317,9 +320,77 @@ public class MapsActivity extends Fragment implements OnMapReadyCallback {
             {
                 double latitude  = intent.getDoubleExtra("latitude",0);
                 double longitude  = intent.getDoubleExtra("longitude",0);
-                UpdateMarkarList(latitude,longitude);
+                UpdateMarkarList(latitude,longitude,zoom);
+                if(rdy && !mMap.isMyLocationEnabled()) {
+                    if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        mMap.setMyLocationEnabled(true);
+                    }
+                }
 //                //System.out.println("ID caché : "+mili.id_);
             }
         }
     };
+
+    private class MyMapsAdapter extends BaseAdapter {
+
+        LayoutInflater mInflater;
+        ArrayList<MyMapMarker> coll;
+
+        public MyMapsAdapter(Context context, ArrayList<MyMapMarker> coll) {
+            this.mInflater = LayoutInflater.from(context);
+            this.coll = coll;
+        }
+
+        private class ViewHolder {
+            public TextView mNom;
+            public ImageView mImg;
+        }
+
+        @Override
+        public int getCount() {
+            return coll.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return coll.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View convertView, ViewGroup viewGroup) {
+            ViewHolder holder = null;
+            // Si la vue n'est pas recyclée
+            if(convertView == null) {
+                // On récupère le layout
+                convertView  = mInflater.inflate(R.layout.maps_list_item, null);
+
+                holder = new ViewHolder();
+                // On place les widgets de notre layout dans le holder
+                holder.mNom = (TextView) convertView.findViewById(R.id.mapsTxt);
+                holder.mImg = (ImageView) convertView.findViewById(R.id.mapsImg);
+
+                // puis on insère le holder en tant que tag dans le layout
+                convertView.setTag(holder);
+            } else {
+                // Si on recycle la vue, on récupère son holder en tag
+                holder = (ViewHolder)convertView.getTag();
+            }
+
+            // Dans tous les cas, on récupère le contact téléphonique concerné
+            MyMapMarker c = (MyMapMarker)getItem(i);
+            // Si cet élément existe vraiment…
+            if(c != null) {
+                // On place dans le holder les informations sur le contact
+                holder.mNom.setText(c.getTitle());
+                holder.mImg.setImageBitmap(c.getClusteredIcon());
+            }
+            return convertView;
+        }
+    }
 }

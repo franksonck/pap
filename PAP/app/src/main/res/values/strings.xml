@@ -60,7 +60,9 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_main2">Main2Activity</string>
-    <string name="maj_proches">MAJ</string>
+    <string name="maj_proches">PROCHES</string>
+    <string name="maps_dialog_title">Portes tocquées :</string>
+    <string name="selection_title">Sélectionnez la bonne adresse :</string>
 
 
 </resources>

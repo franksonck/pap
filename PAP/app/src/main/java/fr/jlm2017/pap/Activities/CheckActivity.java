@@ -61,7 +61,7 @@ public class CheckActivity extends Fragment {
     private String appartNum, formatedFullAdress, user_id,app_token ;
     private String streetNum, streetName, complementAdress, cityName;
     private double latitude, longitude, adressLatitude, adressLongitude;
-    private boolean isAppart, isOpen, positionPrecise;
+    private boolean isAppart, isOpen, positionPrecise, hasOKposition;
 
     //views variables
     private ImageButton menuImage;
@@ -88,17 +88,18 @@ public class CheckActivity extends Fragment {
     }
 
     public void initValues () {
-        isOpen = false;
         positionPrecise = false;
-        complementAdress = "";
         latitude = 0;
         longitude = 0;
-        streetNum = "";
-        appartNum = "";
-        formatedFullAdress = "";
+        hasOKposition = false;
     }
 
     public void resetUI () {
+        isOpen = false;
+        complementAdress = "";
+        streetNum = "";
+        appartNum = "";
+        formatedFullAdress = "";
         checkDoorOpen.setChecked(false);
         changeBackgroundButton(mGPS,R.drawable.button_shape_default_rounded);
         if(isAppart) {
@@ -297,7 +298,7 @@ public class CheckActivity extends Fragment {
                     streetNum=data.components.house_number;
                 }
                 else{//si aucun numéro dans le geocoding, on garde celui du formulaire qui est plus exact et on regarde si on a pas des coordonnées GPS
-                    if(latitude!=0&&longitude!=0){
+                    if(hasOKposition){
                         if(GeoData.distanceGPS(latitude,longitude,adressLatitude,adressLongitude)<500) { //si on est a + de 500m de la rue on ne prend pas nos coordonnées mais celles de la rue (cas ou l'on veut permettre de signaler à distance qu'on a toqué quelquepart et que cet endroit n'est pas répertorié)
                             adressLatitude = latitude;
                             adressLongitude = longitude;
@@ -323,7 +324,7 @@ public class CheckActivity extends Fragment {
                 }
                 ArrayAdapter<String> adapter = new ArrayAdapter<>(mGPS.getContext(),android.R.layout.simple_selectable_list_item,liste_locations);
                 AlertDialog.Builder builder = new AlertDialog.Builder(mGPS.getContext());
-                builder.setTitle(R.string.dialog_title);
+                builder.setTitle(R.string.selection_title);
                 builder.setCancelable(false);
                 builder.setSingleChoiceItems(adapter, 0, new DialogInterface.OnClickListener() {
                     @Override
@@ -336,9 +337,11 @@ public class CheckActivity extends Fragment {
                             streetNum=selected.components.house_number;
                         }
                         else{//si aucun numéro dans le geocoding, on garde celui du formulaire qui est plus exact et on regarde si on a pas des coordonnées GPS
-                            if(latitude!=0&&longitude!=0){
-                                adressLatitude=latitude;
-                                adressLongitude=longitude;
+                            if(hasOKposition){
+                                if(GeoData.distanceGPS(latitude,longitude,adressLatitude,adressLongitude)<500) {
+                                    adressLatitude = latitude;
+                                    adressLongitude = longitude;
+                                }
                             }
                             formatedFullAdress=streetNum+", "+formatedFullAdress;
                         }
@@ -399,7 +402,6 @@ public class CheckActivity extends Fragment {
                         String message = "Vous avez bien toqué au : " + porte.adresseResume;
                         showLongToast(message);
                         resetUI();
-                        initValues();
                         enableUI();
                     }
                 }, timing);
@@ -429,6 +431,7 @@ public class CheckActivity extends Fragment {
                     // on résactive l'envoi
                     setEnabledButton(mAddDoor,R.string.envoyer ,R.drawable.button_shape_default_rounded ,true);
                     setEnabledButton(mGPS,R.string.gps_use ,R.drawable.button_shape_default_rounded ,true);
+                    hasOKposition=true;
                     //on actualise l'affichage dans le Fragement de maps dans tous les cas
                     final Intent intent = new Intent("DATA_MAJ");
                     intent.putExtra("latitude", latitude);
@@ -561,7 +564,7 @@ public class CheckActivity extends Fragment {
                             }
 
                             AlertDialog.Builder builder = new AlertDialog.Builder(mGPS.getContext());
-                            builder.setTitle(R.string.dialog_title);
+                            builder.setTitle(R.string.selection_title);
                             builder.setCancelable(false);
                             builder.setSingleChoiceItems(liste_locations, 0, new DialogInterface.OnClickListener() {
                                 @Override

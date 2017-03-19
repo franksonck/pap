@@ -12,7 +12,7 @@ import android.widget.Toast;
 import fr.jlm2017.pap.MongoDB.QueryBuilder;
 import fr.jlm2017.pap.MongoDB.User;
 import fr.jlm2017.pap.R;
-import fr.jlm2017.pap.utils.Encoder;
+import fr.jlm2017.pap.utils.MathTool;
 import fr.jlm2017.pap.MongoDB.OAuthAsyncTask;
 
 public class SplashScreen extends AppCompatActivity {
@@ -31,11 +31,10 @@ public class SplashScreen extends AppCompatActivity {
                     sleep(SPLASH_SCREEN_TIME);
                     // app token generation
                     SharedPreferences shared = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-                    //token = shared.getString(SavedAppTokenPreference, ""); TODO Uncomment
-                    token="";
+                    token = shared.getString(SavedAppTokenPreference, "");
                     if(token.equals("")) {
                         SharedPreferences.Editor editor = shared.edit();
-                        token = new Encoder.RandomString(32).nextString();
+                        token = new MathTool.RandomString(32).nextString();
                         editor.putString(SavedAppTokenPreference, token );
                         editor.apply();
                     }

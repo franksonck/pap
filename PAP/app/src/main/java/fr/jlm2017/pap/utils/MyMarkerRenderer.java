@@ -37,11 +37,11 @@ public class MyMarkerRenderer extends DefaultClusterRenderer<MyMapMarker> {
     private static int GREEN = Color.GREEN ;
     private static int RED = Color.RED ;
     private static int YELLOW = Color.YELLOW;
-    private Context mContext;
+    private Context myContext;
 
     public MyMarkerRenderer(Context context, GoogleMap map, ClusterManager<MyMapMarker> clusterManager) {
         super(context, map, clusterManager);
-        mContext = context;
+        myContext = context;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             GREEN = context.getResources().getColor(R.color.JLMgreen,null);
             RED = context.getResources().getColor(R.color.JLMred,null);
@@ -85,7 +85,7 @@ public class MyMarkerRenderer extends DefaultClusterRenderer<MyMapMarker> {
             }
         }
 
-        BitmapDescriptor mIcon = BitmapDescriptorFactory.fromBitmap(writeTextOnDisk(color, String.valueOf(num)));
+        BitmapDescriptor mIcon = BitmapDescriptorFactory.fromBitmap(writeTextOnDisk(myContext,color, String.valueOf(num),4));
         markerOptions.icon(mIcon);
     }
 
@@ -95,7 +95,7 @@ public class MyMarkerRenderer extends DefaultClusterRenderer<MyMapMarker> {
         return cluster.getSize() > 1;
     }
 
-    private Bitmap writeTextOnDisk(int color, String text) {
+    public static Bitmap writeTextOnDisk(Context mContext, int color, String text, int strokeWidth) {
 
         int x = convertToPixels(mContext,10);
         int y = convertToPixels(mContext,10);
@@ -113,7 +113,7 @@ public class MyMarkerRenderer extends DefaultClusterRenderer<MyMapMarker> {
         // add stroke
         mDrawable.getPaint().setColor(Color.BLACK);
         mDrawable.getPaint().setStyle(Paint.Style.STROKE);
-        mDrawable.getPaint().setStrokeWidth(convertToPixels(mContext,4));
+        mDrawable.getPaint().setStrokeWidth(convertToPixels(mContext,strokeWidth));
         mDrawable.getPaint().setAntiAlias(true);
         mDrawable.draw(canvas);
 
@@ -144,8 +144,6 @@ public class MyMarkerRenderer extends DefaultClusterRenderer<MyMapMarker> {
         return  bm;
     }
 
-
-
     public static int convertToPixels(Context context, int nDP)
     {
         final float conversionScale = context.getResources().getDisplayMetrics().density;
@@ -153,4 +151,6 @@ public class MyMarkerRenderer extends DefaultClusterRenderer<MyMapMarker> {
         return (int) ((nDP * conversionScale) + 0.5f) ;
 
     }
+
+
 }

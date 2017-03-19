@@ -19,13 +19,11 @@
 -keepattributes InnerClasses
 -keep class fr.jlm2017.pap.MongoDB.DataWrapperPortes** {*;}
 -keep class fr.jlm2017.pap.MongoDB.DataWrapperMilitant** {*;}
--keep class fr.jlm2017.pap.MongoDB.Identifier {
-                                                 public private *;
-                                             }
+
 -keep class fr.jlm2017.pap.MongoDB.Porte {
                                             public private *;
                                         }
--keep class fr.jlm2017.pap.MongoDB.Militant {
+-keep class fr.jlm2017.pap.MongoDB.User {
                                                 public private *;
                                             }
 

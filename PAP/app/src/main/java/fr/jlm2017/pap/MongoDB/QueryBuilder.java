@@ -2,10 +2,6 @@ package fr.jlm2017.pap.MongoDB;
 
 import android.util.Pair;
 
-import java.util.ArrayList;
-
-import fr.jlm2017.pap.utils.Encoder;
-
 /**
  * Created by thoma on 14/02/2017.
  */
@@ -18,7 +14,7 @@ public class QueryBuilder {
      * @return
      */
 /*    private String getApiKey() {
-        return Encoder.decodeString("ccPdsJPdnD-dinB0kFpRz7gBSjf0dMBO5XpaXeS6vG_UOKiHqMSSig==");
+        return MathTool.decodeString("ccPdsJPdnD-dinB0kFpRz7gBSjf0dMBO5XpaXeS6vG_UOKiHqMSSig==");
     }*/
 
     /**

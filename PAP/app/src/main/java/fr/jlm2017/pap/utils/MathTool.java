@@ -2,6 +2,9 @@ package fr.jlm2017.pap.utils;
 
 import android.util.Base64;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.MarkerManager;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Collection;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -24,7 +28,7 @@ import javax.crypto.spec.PBEKeySpec;
  * Created by thoma on 22/02/2017.
  */
 
-public class Encoder {
+public class MathTool {
 
     public static String coding = "JLM2017LinsoumiSe";
 
@@ -239,4 +243,5 @@ public class Encoder {
         }
 
     }
+
 }
